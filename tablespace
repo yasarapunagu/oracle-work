@@ -1,0 +1,267 @@
+tablespaces:
+CHECK ALL TABLE_SPACES AVAILABLE:
+
+SET LINESIZE 200
+
+SELECT tablespace_name,
+       block_size,
+       extent_management,
+       segment_space_management,
+       status
+FROM   dba_tablespaces
+ORDER BY tablespace_name;
+
+TABLESPACE_NAME 	       BLOCK_SIZE EXTENT_MAN SEGMEN STATUS
+------------------------------ ---------- ---------- ------ ---------
+SYSAUX				     8192 LOCAL      AUTO   ONLINE
+SYSTEM				     8192 LOCAL      MANUAL ONLINE
+TEMP				     8192 LOCAL      MANUAL ONLINE
+UNDOTBS1			     8192 LOCAL      MANUAL ONLINE
+USERS				     8192 LOCAL      AUTO   ONLINE
+
+
+CHECK FREE SPACE:
+
+SET PAGESIZE 140 LINESIZE 200;
+set colsep |
+
+SELECT tablespace_name,
+       size_mb,
+       free_mb,
+       max_size_mb,
+       max_free_mb,
+       TRUNC((max_free_mb/max_size_mb) * 100) AS free_pct,
+       ROUND((max_size_mb-max_free_mb)/max_size_mb*10,2) AS used_pct
+FROM   (
+        SELECT a.tablespace_name,
+               b.size_mb,
+               a.free_mb,
+               b.max_size_mb,
+               a.free_mb + (b.max_size_mb - b.size_mb) AS max_free_mb
+        FROM   (SELECT tablespace_name,
+                       TRUNC(SUM(bytes)/1024/1024) AS free_mb
+                FROM   dba_free_space
+                GROUP BY tablespace_name) a,
+               (SELECT tablespace_name,
+                       TRUNC(SUM(bytes)/1024/1024) AS size_mb,
+                       TRUNC(SUM(GREATEST(bytes,maxbytes))/1024/1024) AS max_size_mb
+                FROM   dba_data_files
+                GROUP BY tablespace_name) b
+        WHERE  a.tablespace_name = b.tablespace_name
+       ) 
+	   --where tablespace_name = 'USERS'
+ORDER BY tablespace_name;
+
+ 2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26  
+TABLESPACE_NAME 	      |   SIZE_MB|   FREE_MB|MAX_SIZE_MB|MAX_FREE_MB|  FREE_PCT|  USED_PCT
+------------------------------|----------|----------|-----------|-----------|----------|----------
+SYSAUX			      |       540|	  32|	   32767|      32259|	     98|       .16
+SYSTEM			      |       900|	   9|	   32767|      31876|	     97|       .27
+UNDOTBS1		      |       340|	 184|	   32767|      32611|	     99|       .05
+USERS			      | 	5|	   2|	   32767|      32764|	     99|	 0
+
+
+
+CHECK ALL THE DATAFILE OF A TABLESPACE
+
+COLUMN file_name FORMAT A70;
+SELECT tablespace_name,
+		file_id,
+       file_name,
+       ROUND(bytes/1024/1024) AS size_mb,
+       ROUND(maxbytes/1024/1024) AS max_size_mb,
+       autoextensible,
+       increment_by,
+       status
+FROM   dba_data_files
+--WHERE  tablespace_name = 'USERS'
+ORDER BY file_id;
+
+SQL>   2    3    4    5    6    7    8    9   10  
+
+   FILE_ID|FILE_NAME								 |   SIZE_MB|MAX_SIZE_MB|AUT|INCREMENT_BY|STATUS
+----------|----------------------------------------------------------------------|----------|-----------|---|------------|---------
+	 7|/u01/app/oracle/oradata/SIVDB/datafile/o1_mf_users_mm601pw1_.dbf	 |	   5|	   32768|YES|	      160|AVAILABLE
+
+
+
+
+OMF(oaracle managed file) location:=
+show parameter DB_CREATE_FILE_DEST
+alter system set DB_CREATE_FILE_DEST='/u01/tablespace' scope=both;
+
+
+DDL ON TABLESPACE:
+
+			--Create TABLESPACE
+			Create tablespace HRMS_TS datafile '/u01/app/oracle/oradata/SIVDB/datafile/HRMS_001.dbf' size 5M autoextend on;
+			show parameter DB_CREATE_FILE_DEST
+**************************
+CHECK ALL TABLE_SPACES AVAILABLE:
+SET LINESIZE 200
+
+SELECT tablespace_name,
+       block_size,
+       extent_management,
+       segment_space_management,
+       status
+FROM   dba_tablespaces
+ORDER BY tablespace_name;
+
+****************************************************
+
+CHECK FREE SPACE:
+
+SET PAGESIZE 140 LINESIZE 200;
+set colsep |
+
+SELECT tablespace_name,
+       size_mb,
+       free_mb,
+       max_size_mb,
+       max_free_mb,
+       TRUNC((max_free_mb/max_size_mb) * 100) AS free_pct,
+       ROUND((max_size_mb-max_free_mb)/max_size_mb*10,2) AS used_pct
+FROM   (
+        SELECT a.tablespace_name,
+               b.size_mb,
+               a.free_mb,
+               b.max_size_mb,
+               a.free_mb + (b.max_size_mb - b.size_mb) AS max_free_mb
+        FROM   (SELECT tablespace_name,
+                       TRUNC(SUM(bytes)/1024/1024) AS free_mb
+                FROM   dba_free_space
+                GROUP BY tablespace_name) a,
+               (SELECT tablespace_name,
+                       TRUNC(SUM(bytes)/1024/1024) AS size_mb,
+                       TRUNC(SUM(GREATEST(bytes,maxbytes))/1024/1024) AS max_size_mb
+                FROM   dba_data_files
+                GROUP BY tablespace_name) b
+        WHERE  a.tablespace_name = b.tablespace_name
+       ) 
+	   --where tablespace_name = 'USERS'
+ORDER BY tablespace_name;
+
+*****************************************************
+
+CHECK ALL THE DATAFILE OF A TABLESPACE
+
+COLUMN file_name FORMAT A70;
+SELECT tablespace_name,
+		file_id,
+       file_name,
+       ROUND(bytes/1024/1024) AS size_mb,
+       ROUND(maxbytes/1024/1024) AS max_size_mb,
+       autoextensible,
+       increment_by,
+       status
+FROM   dba_data_files
+--WHERE  tablespace_name = 'USERS'
+ORDER BY file_id;
+
+
+
+
+
+Create tablespace HDFC_TS datafile '/u01/app/oracle/oradata/SIVDB/datafile/HDFC_001.dbf' size 5M ;
+show parameter DB_CREATE_FILE_DEST
+(****CHECK ALL TABLE_SPACES AVAILABLE
+****CHECK FREE SPACE:
+****CHECK ALL THE DATAFILE OF A TABLESPACE*****)
+
+
+
+
+create tablespace ICICI_TS datafile '/u01/app/oracle/ICICI_001.dbf' size 10M;
+
+--ignore below till ASM is completed.
+create tablespace hrms_ts datafile '+DATA' size 20M;
+
+
+Create tablespace HRMS_TS datafile '/u01/app/oracle/oradata/SIVDB/datafile/HRMS_001.dbf' size 5M autoextend on;
+
+
+-- Add a datafile to a tablespace
+Alter tablespace HRMS_TS add datafile '/u01/app/oracle/oradata/SIVDB/datafile/HRMS_002.dbf'  size 5M autoextend on;
+(****CHECK ALL TABLE_SPACES AVAILABLE
+****CHECK FREE SPACE:
+****CHECK ALL THE DATAFILE OF A TABLESPACE*****)
+
+Alter tablespace HRMS_TS add datafile '/u01/app/oracle/oradata/SIVDB/datafile/HRMS_003.dbf'  size 5M;
+(****CHECK ALL TABLE_SPACES AVAILABLE
+****CHECK FREE SPACE:
+****CHECK ALL THE DATAFILE OF A TABLESPACE*****)
+
+Alter tablespace HDFC_TS add datafile '/u01/app/oracle/oradata/SIVDB/datafile/HDFC_002.dbf' size 10M autoextend on;
+
+
+
+
+
+
+
+-- Resize a datafile
+alter database datafile '/u01/app/oracle/oradata/SIVDB/datafile/HRMS_001.dbf' resize 200M;
+(****CHECK ALL TABLE_SPACES AVAILABLE
+****CHECK FREE SPACE:
+****CHECK ALL THE DATAFILE OF A TABLESPACE*****)
+
+
+alter database datafile '/u01/app/oracle/oradata/SIVDB/datafile/HRMS_003.dbf' resize 10M;
+(****CHECK ALL TABLE_SPACES AVAILABLE
+****CHECK FREE SPACE:
+****CHECK ALL THE DATAFILE OF A TABLESPACE*****)
+
+--ignore below till ASM is completed.
+alter database datafile '+DATA/ORADB/DATAFILE/users.279.1102165131' resize 150M;
+
+
+
+
+
+-- Make a datafile offline/online
+alter tablespace HRMS_TS offline
+Alter database datafile '/u01/app/oracle/oradata/SIVDB/datafile/HRMS_002.dbf' offline;
+CHECK ALL THE DATAFILE OF A TABLESPACE
+
+
+
+Alter database datafile '/u01/app/oracle/oradata/SIVDB/datafile/HRMS_002.dbf' online;
+CHECK ALL THE DATAFILE OF A TABLESPACE
+
+if required do media recovery for this datafile.
+recover datafile 8;
+recover datafile '/u01/app/oracle/oradata/SIVDB/datafile/HRMS_002.dbf';
+
+
+
+
+-- Drop a datafile:
+
+Alter tablespace HRMS_TS drop datafile '/u01/app/oracle/oradata/SIVDB/datafile/HRMS_002.dbf' ;
+CHECK ALL THE DATAFILE OF A TABLESPACE
+alter tablespace HRMS_TS drop datafile '/u01/app/oracle/oradata/SIVDB/datafile/HDFC_003.dbf' ;
+CHECK ALL THE DATAFILE OF A TABLESPACE
+
+
+
+
+--ignore below till ASM is completed.
+Alter tablespace USERS drop datafile '+DATA/ORADB/DATAFILE/users.279.1102165131';
+
+-- Drop a tablespace without removing the physical database files.
+
+
+
+create tablespace HRMS_TS;(creating heading from tablespace
+drop tablespace HRMS_TS;(removing heading from tablespace)
+Tablespace dropped.
+
+select file_name from dba_data_files where tablespace_name='HRMS_TS';
+
+no rows selected
+
+-- Drop tablespace including the physical datafiles.
+
+drop tablespace HRMS_TS including contents and datafiles;
+Tablespace dropped.
