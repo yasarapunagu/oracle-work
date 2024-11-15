@@ -1,0 +1,56 @@
+UNDO:
+KNOW YOUR DEFAULT UNDO TABLE SPACE;
+SHOW PARAMETER UNDO_TABLESPACE;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+undo_tablespace 		     string	 UNDOTBS1
+
+select VALUE from v$parameter where NAME='undo_tablespace';
+
+VALUE
+--------------------------------------------------------------------------------
+UNDOTBS1
+
+KNOW UNDO RETENTION
+show parameter undo;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+temp_undo_enabled		     boolean	 FALSE
+undo_management 		     string	 AUTO
+undo_retention			     integer	 2400
+undo_tablespace 		     string	 UNDOTBS1
+
+
+SET UNDO_RETENTION value at any time using:
+SQL> ALTER SYSTEM SET UNDO_RETENTION = 2400;
+
+CREATING UNDO TS:
+CREATE UNDO TABLESPACE undotbs_02 DATAFILE '/u01/undo02.dbf' SIZE 2M REUSE AUTOEXTEND ON RETENTION NOGUARANTEE;
+
+CHANGE UNDO TABLESPACE
+ALTER SYSTEM SET UNDO_TABLESPACE = undotbs_02;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+temp_undo_enabled		     boolean	 FALSE
+undo_management 		     string	 AUTO
+undo_retention			     integer	 2400
+undo_tablespace 		     string	 UNDOTBS_02
+
+
+KNOW UNDO RETENTION
+show parameter undo;
+
+Enabling and disabling undo retention guarantee
+SQL> ALTER TABLESPACE undotbs_02 RETENTION GUARANTEE;
+SQL> ALTER TABLESPACE undotbs_02 RETENTION NOGUARANTEE;
+
+CHECK IF YOUR UNDO HAS GUATENTEED RETENTION
+select tablespace_name ,retention from dba_tablespaces where contents = 'UNDO';
+
+TABLESPACE_NAME 	       RETENTION
+------------------------------ -----------
+UNDOTBS1		       NOGUARANTEE
+UNDOTBS_02		       GUARANTEE
