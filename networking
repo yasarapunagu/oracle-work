@@ -1,0 +1,1914 @@
+
+
+
+
+
+
+how to make u r ip perment
+--------------------------
+applications --terminal
+systemtools---click
+settings--click 
+network--wired--click on--nutsymbolle--ipv4--click--manual
+address--192.168.0.249 netmask--255.255.255.0 gateway--192.168.0.1
+DNS--192.168.0.1--apply
+wired--off and on
+
+
+BASHPROFILE
+------------
+ls -ltrah  --(.filename)hidden(filename)appered
+vi .bash_profile
+
+export ORACLE_HOME=/u01/app/oracle/product/19.0.0.0/dbhome_1
+
+export ORACLE_SID=sivdb
+
+export PATH=$PATH:$ORACLE_HOME/bin
+
+
+
+LISTENER,TNS%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-----------------------------------------------------------
+[oracle@siva ~]$  . oraenv
+ORACLE_SID = [sivdb] ? sivdb 
+The Oracle base has been set to /u01/app/oracle
+[oracle@siva ~]$ cd /u01/app/ora
+oracle/       oraInventory/ 
+[oracle@siva ~]$ cd /u01/app/oracle/product/19.0.0.0/dbhome_1/bin
+[oracle@siva bin]$ cd ..
+[oracle@siva dbhome_1]$ cd network/admin
+[oracle@siva admin]$ systemctl stop firewalld
+[oracle@siva admin]$ systemctl diasble firewalld
+Unknown operation 'diasble'.
+[oracle@siva admin]$ systemctl disable firewalld
+[oracle@siva admin]$ ll
+total 12
+-rw-r--r--. 1 oracle oinstall  474 Nov 22 17:18 listener.ora
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+-rw-r--r--. 1 oracle oinstall  345 Nov 22 17:32 tnsnames.ora
+[oracle@siva admin]$ vi listener.ora
+[oracle@siva admin]$ vi tnsnames.ora
+[oracle@siva admin]$ cd ../..
+[oracle@siva dbhome_1]$ cd bin
+[oracle@siva bin]$ lsnrctl start listener
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 23-NOV-2024 10:44:01
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Starting /u01/app/oracle/product/19.0.0.0/dbhome_1/bin/tnslsnr: please wait...
+
+TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+System parameter file is /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Log messages written to /u01/app/oracle/diag/tnslsnr/siva/listener/alert/log.xml
+Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.0.249)(PORT=1521)))
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.0.249)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     listener
+Version                   TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+Start Date                23-NOV-2024 10:44:02
+Uptime                    0 days 0 hr. 0 min. 1 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/siva/listener/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.0.249)(PORT=1521)))
+Services Summary...
+Service "sivdb" has 1 instance(s).
+  Instance "sivdb", status UNKNOWN, has 1 handler(s) for this service...
+The command completed successfully
+[oracle@siva bin]$ tnsping to_sivdb
+
+TNS Ping Utility for Linux: Version 19.0.0.0.0 - Production on 23-NOV-2024 10:44:18
+
+Copyright (c) 1997, 2019, Oracle.  All rights reserved.
+
+Used parameter files:
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.249)(PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = sivdb)))
+OK (60 msec)
+[oracle@siva bin]$ netmgr
+[oracle@siva bin]$ 
+[oracle@siva bin]$ sqlplus sys/oracle@to_murdb as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 10:46:58 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> startup;
+ORACLE instance started.
+
+Total System Global Area 1543500144 bytes
+Fixed Size		    8896880 bytes
+Variable Size		  905969664 bytes
+Database Buffers	  620756992 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+ORA-01589: must use RESETLOGS or NORESETLOGS option for database open
+
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@siva bin]$ sqlplus sys/oracle@to_murdb as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 10:47:43 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> shut immediate;
+ORA-01109: database not open
+
+
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup mount;
+ORACLE instance started.
+
+Total System Global Area 1543500144 bytes
+Fixed Size		    8896880 bytes
+Variable Size		  905969664 bytes
+Database Buffers	  620756992 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+SQL> 
+SQL> alter database open resetlogs;
+
+Database altered.
+
+SQL> select name,open_mode from v$database;
+
+NAME	  OPEN_MODE
+--------- --------------------
+MURDB	  READ WRITE
+
+
+
+
+
+=====================================================================================================+++++++++++++++++++++++++++session1
+
+login as: oracle
+oracle@192.168.0.135's password:
+    ┌──────────────────────────────────────────────────────────────────────┐
+    │                 • MobaXterm Personal Edition v24.0 •                 │
+    │               (SSH client, X server and network tools)               │
+    │                                                                      │
+    │ ⮞ SSH session to oracle@192.168.0.135                                │
+    │   • Direct SSH      :  ✓                                             │
+    │   • SSH compression :  ✓                                             │
+    │   • SSH-browser     :  ✓                                             │
+    │   • X11-forwarding  :  ✓  (remote display is forwarded through SSH)  │
+    │                                                                      │
+    │ ⮞ For more info, ctrl+click on help or visit our website.            │
+    └──────────────────────────────────────────────────────────────────────┘
+
+Last login: Fri Nov 22 09:14:24 2024 from 192.168.0.156
+[oracle@vamshi ~]$ . oraenv
+ORACLE_SID = [vamdb] ?
+The Oracle base has been set to /u01/app/oracle
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:15:10 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> startup;
+ORACLE instance started.
+
+Total System Global Area 2415917880 bytes
+Fixed Size                  8899384 bytes
+Variable Size             520093696 bytes
+Database Buffers         1879048192 bytes
+Redo Buffers                7876608 bytes
+Database mounted.
+Database opened.
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+
+
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$ cd $ORACLE_HOME
+[oracle@vamshi dbhome_1]$ cd network/admin/
+[oracle@vamshi admin]$ ls -lrt
+total 12
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+drwxr-xr-x. 2 oracle oinstall   64 Nov 22 09:17 samples
+-rw-r--r--. 1 oracle oinstall  471 Nov 22 09:36 listener.ora
+-rw-r--r--. 1 oracle oinstall  345 Nov 22 09:43 tnsnames.ora
+[oracle@vamshi admin]$ rm *.ora
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ ls -lrt
+total 4
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+drwxr-xr-x. 2 oracle oinstall   64 Nov 22 09:17 samples
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ hostname
+vamshi.com
+[oracle@vamshi admin]$ cat /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+
+192.168.0.207 abc
+192.168.0.144 venky.com venky
+192.168.0.135 vamshi.com
+[oracle@vamshi admin]$ netmgr
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ ls -lrt
+total 8
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+drwxr-xr-x. 2 oracle oinstall   64 Nov 22 09:17 samples
+-rw-r--r--. 1 oracle oinstall  489 Nov 23 09:17 listener.ora
+[oracle@vamshi admin]$ cat listener.ora
+# listener.ora Network Configuration File: /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+# Generated by Oracle configuration tools.
+
+SID_LIST_LISTENER_VAMDB =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = vamdb)
+      (ORACLE_HOME = /u01/app/oracle/product/19.0.0.0/dbhome_1)
+      (SID_NAME = vamdb)
+    )
+  )
+
+LISTENER_VAMDB =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = vamshi.com)(PORT = 1521))
+  )
+
+ADR_BASE_LISTENER_VAMDB = /u01/app/oracle
+
+[oracle@vamshi admin]$ lsnrctl start LISTENER_VAMDB
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 23-NOV-2024 09:17:45
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Starting /u01/app/oracle/product/19.0.0.0/dbhome_1/bin/tnslsnr: please wait...
+
+TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+System parameter file is /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Log messages written to /u01/app/oracle/diag/tnslsnr/vamshi/listener_vamdb/alert/log.xml
+Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=vamshi.com)(PORT=1521)))
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=vamshi.com)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     LISTENER_VAMDB
+Version                   TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+Start Date                23-NOV-2024 09:17:46
+Uptime                    0 days 0 hr. 0 min. 0 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/vamshi/listener_vamdb/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=vamshi.com)(PORT=1521)))
+Services Summary...
+Service "vamdb" has 1 instance(s).
+  Instance "vamdb", status UNKNOWN, has 1 handler(s) for this service...
+The command completed successfully
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ cat listener.ora
+# listener.ora Network Configuration File: /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+# Generated by Oracle configuration tools.
+
+SID_LIST_LISTENER_VAMDB =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = vamdb)
+      (ORACLE_HOME = /u01/app/oracle/product/19.0.0.0/dbhome_1)
+      (SID_NAME = vamdb)
+    )
+  )
+
+LISTENER_VAMDB =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = vamshi.com)(PORT = 1521))
+  )
+
+ADR_BASE_LISTENER_VAMDB = /u01/app/oracle
+
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ sqlplus sys/oracle@192.168.0.207:1521/suridb as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:24:05 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ sqlplus sys/oracledb@192.168.0.135:1521/vamdb as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:24:51 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ netmgr
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ cat tnsnames.ora
+# tnsnames.ora Network Configuration File: /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/tnsnames.ora
+# Generated by Oracle configuration tools.
+
+TO_VAMDB =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.135)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = vamdb)
+    )
+  )
+
+[oracle@vamshi admin]$ vi tnsnames.ora
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ tnsping to_vamdb
+
+TNS Ping Utility for Linux: Version 19.0.0.0.0 - Production on 23-NOV-2024 09:27:01
+
+Copyright (c) 1997, 2019, Oracle.  All rights reserved.
+
+Used parameter files:
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.135)(PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = vamdb)))
+OK (0 msec)
+[oracle@vamshi admin]$ lsnrctl stop listener_vamdb
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 23-NOV-2024 09:27:15
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=vamshi.com)(PORT=1521)))
+The command completed successfully
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ tnsping to_vamdb
+
+TNS Ping Utility for Linux: Version 19.0.0.0.0 - Production on 23-NOV-2024 09:27:17
+
+Copyright (c) 1997, 2019, Oracle.  All rights reserved.
+
+Used parameter files:
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.135)(PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = vamdb)))
+TNS-12541: TNS:no listener
+[oracle@vamshi admin]$ lsnrctl start listener_vamdb
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 23-NOV-2024 09:27:26
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Starting /u01/app/oracle/product/19.0.0.0/dbhome_1/bin/tnslsnr: please wait...
+
+TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+System parameter file is /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Log messages written to /u01/app/oracle/diag/tnslsnr/vamshi/listener_vamdb/alert/log.xml
+Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=vamshi.com)(PORT=1521)))
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=vamshi.com)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     listener_vamdb
+Version                   TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+Start Date                23-NOV-2024 09:27:26
+Uptime                    0 days 0 hr. 0 min. 0 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/vamshi/listener_vamdb/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=vamshi.com)(PORT=1521)))
+Services Summary...
+Service "vamdb" has 1 instance(s).
+  Instance "vamdb", status UNKNOWN, has 1 handler(s) for this service...
+The command completed successfully
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ sqlplus sys/oracledb@to_vamdb as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:27:39 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+^[[A[oracle@vamshi admi
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ sqlplus sys/oracle@to_suridb as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:27:53 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ scp tnsnames.ora
+usage: scp [-12346BCpqrv] [-c cipher] [-F ssh_config] [-i identity_file]
+           [-l limit] [-o ssh_option] [-P port] [-S program]
+           [[user@]host1:]file1 ... [[user@]host2:]file2
+[oracle@vamshi admin]$ scp tnsnames.ora oracle@192.168.0.207:$PWD
+oracle@192.168.0.207's password:
+tnsnames.ora                                                        100%  526   115.6KB/s   00:00
+[oracle@vamshi admin]$ echo $PWD
+/u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin
+[oracle@vamshi admin]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:29:41 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> create user hdfc_user identified by hdfc_user;
+
+User created.
+
+SQL>
+SQL>
+SQL>
+SQL>
+SQL> grant connect, resource to hdfc_user;
+
+Grant succeeded.
+
+SQL>
+SQL>
+SQL> alter user hdfc_user quota unlimited on users;
+
+User altered.
+
+SQL>
+SQL>
+SQL>
+SQL>
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@vamshi admin]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:33:15 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> create table hdfc_user.hdfc_account (acc_no number,acc_name varchar2(10),bal number(7,2));
+
+Table created.
+
+SQL> show user
+USER is "SYS"
+SQL> select user from dual;
+
+USER
+--------------------------------------------------------------------------------
+SYS
+
+SQL> insert into hdfc_user.hdfc_account values (123,'RAJU',10000);
+commit
+1 row created.
+
+SQL> ;
+
+Commit complete.
+
+SQL>
+SQL>
+SQL>
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ sqlplus hdfc_user/hdfc_user
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:38:06 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> create database link to_icici_user connect to icici_user identified by icici_user using 'to_suridb';
+create database link to_icici_user connect to icici_user identified by icici_user using 'to_suridb'
+*
+ERROR at line 1:
+ORA-01031: insufficient privileges
+
+
+SQL> conn / as sysdba
+Connected.
+SQL> grant create database link to hdfc_user;
+
+Grant succeeded.
+
+SQL>
+SQL>
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@vamshi admin]$ sqlplus hdfc_user/hdfc_user
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:39:33 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Last Successful login time: Sat Nov 23 2024 09:38:07 +05:30
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL>
+SQL>
+SQL>
+SQL> create database link to_icici_user connect to icici_user identified by icici_user using 'to_suridb';
+
+Database link created.
+
+SQL> select * from tab@to_icici_user;
+
+TNAME
+--------------------------------------------------------------------------------
+TABTYPE        CLUSTERID
+------------- ----------
+ICICI_ACCOUNT
+TABLE
+
+
+SQL> select * from icici_account@to_icici_user;
+
+    ACC_NO ACT_NAME      BALANCE
+---------- ---------- ----------
+       789 SAMPATH         50000
+
+SQL> /
+
+    ACC_NO ACT_NAME      BALANCE
+---------- ---------- ----------
+       789 SAMPATH         50000
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@vamshi admin]$ sqlplus hdfc_user/hdfc_user
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:42:01 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Last Successful login time: Sat Nov 23 2024 09:39:33 +05:30
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> select * from icici_account@to_icici_user;
+select * from icici_account@to_icici_user
+                            *
+ERROR at line 1:
+ORA-12541: TNS:no listener
+
+
+SQL>
+SQL>
+SQL>
+SQL> /
+
+    ACC_NO ACT_NAME      BALANCE
+---------- ---------- ----------
+       789 SAMPATH         50000
+
+SQL> create table icici_account as select * from icici_account@to_icici_user;
+
+Table created.
+
+SQL> select * from icici_account;
+
+    ACC_NO ACT_NAME      BALANCE
+---------- ---------- ----------
+       789 SAMPATH         50000
+
+SQL> /
+
+    ACC_NO ACT_NAME      BALANCE
+---------- ---------- ----------
+       789 SAMPATH         50000
+
+SQL> select * from icici_account@to_icici_user;
+
+    ACC_NO ACT_NAME      BALANCE
+---------- ---------- ----------
+       789 SAMPATH         50000
+       790 VAMSHI           2000
+
+SQL> show user
+USER is "HDFC_USER"
+SQL> conn / as sysdba
+Connected.
+SQL> grant create materialized view to hdfc_user;
+
+Grant succeeded.
+
+SQL> conn hdfc_user/hdfc_user
+Connected.
+SQL>
+SQL>
+SQL>
+SQL>
+SQL> create materialized view icici_account_mv select * from icici_account@to_icici_user;
+create materialized view icici_account_mv select * from icici_account@to_icici_user
+                                          *
+ERROR at line 1:
+ORA-00905: missing keyword
+
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1* create materialized view icici_account_mv as  select * from icici_account@to_icici_user
+SQL> /
+
+Materialized view created.
+
+SQL> select * from icici_account_mv ;
+
+    ACC_NO ACT_NAME      BALANCE
+---------- ---------- ----------
+       789 SAMPATH         50000
+       790 VAMSHI           2000
+
+SQL> /
+
+    ACC_NO ACT_NAME      BALANCE
+---------- ---------- ----------
+       789 SAMPATH         50000
+       790 VAMSHI           2000
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@vamshi admin]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:54:34 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> exec dbms_mview.refresh('hdfc_user.icici_account_mv');
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from hdfc_user.icici_account_mv;
+
+    ACC_NO ACT_NAME      BALANCE
+---------- ---------- ----------
+       789 SAMPATH         50000
+       790 VAMSHI           2000
+       791 ADITI          200000
+
+SQL>
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++session2
+
+login as: oracle
+oracle@192.168.0.207's password:
+Last login: Sat Nov 23 09:14:08 2024
+[oracle@surendra ~]$ env |grep ORA
+ORACLE_SID=suridb
+ORACLE_BASE=/u01/app/oracle
+ORACLE_HOME=/u01/app/oracle/product/19.0.0.0/dbhome_1
+[oracle@surendra ~]$ ps -ef|grep smon
+oracle    3428  3339  0 09:14 pts/1    00:00:00 grep --color=auto smon
+[oracle@surendra ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:14:40 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+startupConnected to an idle instance.
+
+SQL> ;
+ORACLE instance started.
+
+Total System Global Area 1543500144 bytes
+Fixed Size                  8896880 bytes
+Variable Size             922746880 bytes
+Database Buffers          603979776 bytes
+Redo Buffers                7876608 bytes
+Database mounted.
+Database opened.
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+
+
+
+[oracle@surendra ~]$
+[oracle@surendra ~]$
+[oracle@surendra ~]$
+[oracle@surendra ~]$
+[oracle@surendra ~]$
+[oracle@surendra ~]$
+[oracle@surendra ~]$
+[oracle@surendra ~]$
+[oracle@surendra ~]$ cd $ORACLE_HOME
+[oracle@surendra dbhome_1]$ cd network/admin/
+[oracle@surendra admin]$ ls -lrt
+total 12
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall  476 Nov 22 15:52 listener.ora
+-rw-r--r--. 1 oracle oinstall  338 Nov 22 16:08 tnsnames.ora
+[oracle@surendra admin]$ rm *.ora
+[oracle@surendra admin]$ ls -lrt
+total 4
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$ export DISPLAY=:0
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$ netmgr
+^C[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$ vi listener.ora
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$ lsnrctl start listener_suridb
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 23-NOV-2024 09:22:06
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Starting /u01/app/oracle/product/19.0.0.0/dbhome_1/bin/tnslsnr: please wait...
+
+TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+System parameter file is /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Log messages written to /u01/app/oracle/diag/tnslsnr/surendra/listener_suridb/alert/log.xml
+Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.0.207)(PORT=1521)))
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.0.207)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     listener_suridb
+Version                   TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+Start Date                23-NOV-2024 09:22:07
+Uptime                    0 days 0 hr. 0 min. 1 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/surendra/listener_suridb/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.0.207)(PORT=1521)))
+Services Summary...
+Service "suridb" has 1 instance(s).
+  Instance "suridb", status UNKNOWN, has 1 handler(s) for this service...
+The command completed successfully
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$ systemctl stop firewalld
+==== AUTHENTICATING FOR org.freedesktop.systemd1.manage-units ===
+Authentication is required to manage system services or units.
+Authenticating as: root
+Password:
+==== AUTHENTICATION COMPLETE ===
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$ systemctl disable firewalld
+==== AUTHENTICATING FOR org.freedesktop.systemd1.manage-unit-files ===
+Authentication is required to manage system service or unit files.
+Authenticating as: root
+Password:
+==== AUTHENTICATION COMPLETE ===
+Removed symlink /etc/systemd/system/multi-user.target.wants/firewalld.service.
+Removed symlink /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service.
+==== AUTHENTICATING FOR org.freedesktop.systemd1.reload-daemon ===
+Authentication is required to reload the systemd state.
+Authenticating as: root
+Password:
+==== AUTHENTICATION COMPLETE ===
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$ ps -ef|grep smon
+oracle    3506     1  0 09:14 ?        00:00:00 ora_smon_suridb
+oracle    4543  3339  0 09:23 pts/1    00:00:00 grep --color=auto smon
+[oracle@surendra admin]$ ps -ef|grep tns
+root        23     2  0 09:13 ?        00:00:00 [netns]
+oracle    4373     1  0 09:22 ?        00:00:00 /u01/app/oracle/product/19.0.0.0/dbhome_1/bin/tnslsnr listener_suridb -inherit
+oracle    4548  3339  0 09:23 pts/1    00:00:00 grep --color=auto tns
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$ sqlplus sys/oracledb@192.168.0.207:1521/suridb as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:23:35 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+Enter user-name:
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+Enter user-name:
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+SP2-0157: unable to CONNECT to ORACLE after 3 attempts, exiting SQL*Plus
+[oracle@surendra admin]$
+[oracle@surendra admin]$ sqlplus sys/oracle@192.168.0.207:1521/suridb as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:23:44 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL>
+SQL>
+SQL>
+SQL>
+SQL>
+SQL>
+SQL>
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@surendra admin]$ ls -lrt
+total 12
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall  497 Nov 23 09:21 listener.ora
+-rw-r--r--. 1 oracle oinstall  526 Nov 23 09:28 tnsnames.ora
+[oracle@surendra admin]$ cat tnsnames.ora
+# tnsnames.ora Network Configuration File: /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/tnsnames.ora
+# Generated by Oracle configuration tools.
+
+TO_VAMDB =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.135)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = vamdb)
+    )
+  )
+
+
+TO_SURIDB =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.207)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = suridb)
+    )
+  )
+[oracle@surendra admin]$ tnsping to_vamdb
+
+TNS Ping Utility for Linux: Version 19.0.0.0.0 - Production on 23-NOV-2024 09:28:49
+
+Copyright (c) 1997, 2019, Oracle.  All rights reserved.
+
+Used parameter files:
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.135)(PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = vamdb)))
+OK (400 msec)
+[oracle@surendra admin]$ tnsping to_suridb
+
+TNS Ping Utility for Linux: Version 19.0.0.0.0 - Production on 23-NOV-2024 09:28:53
+
+Copyright (c) 1997, 2019, Oracle.  All rights reserved.
+
+Used parameter files:
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.207)(PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = suridb)))
+OK (200 msec)
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$ sqlplus sys/oracle@to_suridb as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:29:06 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@surendra admin]$ sqlplus sys/oracledb@to_vamdb as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:29:18 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> exit
+\Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@surendra admin]$ \
+>
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:31:10 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+cr
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> eate user icici_user identified by icici_user;
+
+User created.
+
+SQL>
+SQL>
+SQL>
+SQL>
+SQL>
+SQL>
+SQL> grant resource,connect to icici_user;
+
+Grant succeeded.
+
+SQL> alter user icici_user quota unlimted on users;
+alter user icici_user quota unlimted on users
+                            *
+ERROR at line 1:
+ORA-02187: invalid quota specification
+
+
+SQL>
+SQL>
+SQL>
+SQL> ed
+Wrote file afiedt.buf
+
+  1* alter user icici_user quota unlimited on users
+SQL> /
+
+User altered.
+
+SQL>
+SQL>
+SQL>
+SQL>
+SQL>
+SQL>
+SQL> conn icici_user/icici_user
+Connected.
+SQL>
+SQL>
+SQL>
+SQL> create table icici_account (acc_no number(11),act_name varchar2(10),balance number(10,2));
+
+Table created.
+
+SQL>
+SQL>
+SQL>
+SQL> insert into icici_account values(789,'SAMPATH',50000);
+
+1 row created.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$ ls -lrt
+total 16
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall  497 Nov 23 09:21 listener.ora
+-rw-r--r--. 1 oracle oinstall  526 Nov 23 09:28 tnsnames.ora
+-rw-r--r--. 1 oracle oinstall   49 Nov 23 09:32 afiedt.buf
+[oracle@surendra admin]$ lsnrctl stop listener_suridb
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 23-NOV-2024 09:41:52
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.0.207)(PORT=1521)))
+The command completed successfully
+[oracle@surendra admin]$ lsnrctl start listener_suridb
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 23-NOV-2024 09:42:37
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Starting /u01/app/oracle/product/19.0.0.0/dbhome_1/bin/tnslsnr: please wait...
+
+TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+System parameter file is /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Log messages written to /u01/app/oracle/diag/tnslsnr/surendra/listener_suridb/alert/log.xml
+Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.0.207)(PORT=1521)))
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.0.207)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     listener_suridb
+Version                   TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+Start Date                23-NOV-2024 09:42:38
+Uptime                    0 days 0 hr. 0 min. 1 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/surendra/listener_suridb/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.0.207)(PORT=1521)))
+Services Summary...
+Service "suridb" has 1 instance(s).
+  Instance "suridb", status UNKNOWN, has 1 handler(s) for this service...
+The command completed successfully
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$
+[oracle@surendra admin]$ sqlplus icici_user/icici_user
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:45:45 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+
+
+
+
+Last Successful login time: Sat Nov 23 2024 09:44:43 +05:30
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> SQL> SQL> SQL> SQL> SQL>
+SQL>
+SQL>
+SQL>
+SQL>
+SQL> insert into icici_account values(790,'VAMSHI',2000);
+
+1 row created.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> insert into icici_account values (791,'ADITI',200000);
+
+1 row created.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> ^Alogin as: oracle
+oracle@192.168.0.135's password:
+    ┌──────────────────────────────────────────────────────────────────────┐
+    │                 • MobaXterm Personal Edition v24.0 •                 │
+    │               (SSH client, X server and network tools)               │
+    │                                                                      │
+    │ ⮞ SSH session to oracle@192.SP2-0734: 168.0.135                                │
+    │   • Direct SSH      :  ✓                                             │
+    │   • SSH compression :  ✓                                             │
+    │   • SSH-browser     :  ✓                                             │
+    │   • X11-forwarding  :  ✓  (remote display is forwarded through SSH)  │
+    │                                                                      │
+    │ ⮞ For more info, ctrl+click on help or visit our website.            │
+    └──────────────────────────────────────────────────────────────────────┘
+
+Last login: Fri Nov 22 09:14:24 2024 from 192.168.0.156
+[oracle@vamshi ~]$ . oraenv
+ORACLE_SID = [vamdb] ?
+The Oracle base has been set to /u01/app/oracle
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Nov 23 09:15:10 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> startup;
+ORACLE instance started.
+
+Total System Global Area 2415917880 bytes
+Fixed Size                  8899384 bytes
+Variable Size             520093696 bytes
+Database Buffers         1879048192 bytes
+Redo Buffers                7876608 bytes
+Database mounted.
+Database opened.
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+
+
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$
+[oracle@vamshi ~]$ cd $ORACLE_HOME
+[oracle@vamshi dbhome_1]$ cd network/admin/
+[oracle@vamshi admin]$ ls -lrt
+total 12
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+drwxr-xr-x. 2 oracle oinstall   64 Nov 22 09:17 samples
+-rw-r--r--. 1 oracle oinstall  471 Nov 22 09:36 listener.ora
+-rw-r--r--. 1 oracle oinstall  345 Nov 22 09:43 tnsnames.ora
+[oracle@vamshi admin]$ rm *.ora
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ ls -lrt
+total 4
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+drwxr-xr-x. 2 oracle oinstall   64 Nov 22 09:17 samples
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ hostname
+vamshi.com
+[oracle@vamshi admin]$ cat /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+
+192.168.0.207 abc
+192.168.0.144 venky.com venky
+192.168.0.135 vamshi.com
+[oracle@vamshi admin]$ netmgr
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$
+[oracle@vamshi admin]$ ls -lrt
+total 8
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+drwxr-xr-x. 2 oracle oinstall   64 Nov 22 09:17 samples
+-rw-r--r--. 1 oracle oinstall  489 Nov 23 09:17 listener.ora
+[oracle@vamshi admin]$ cat listener.ora
+# listener.ora Network Configuration Funknown command beginning "login as:..." - rest of line ignored.
+ile: /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+# Generated by Oracle configuration tools.
+
+SID_LIST_LISTENER_VAMDB =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = vamdb)
+      (ORACLE_HOME = /u0SQL> 1/app/oracle/product/19.0.0.0/dbhome_1)
+      (SID_NAME = vamdb)
+    )
+  )
+
+LISTENER_VAMDB =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = vamshi.com)(PORT = 1521))
+  )
+
+ADR_BASE_LISTENER_VAMDB = /u01/app/oracle
+
+[oracle@vamshi admin]$ lsnrctl start LISTENER_VAMDB
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+scp /u01/file1 oracle@192.168.0.138:/u01/dir1
+scp oracle@192.168.0.198:/u01/file1 /u01/dir1/
+
+ssh oracle@192.168.0.144
+sqlplus sys/oracle@192.168.0.249:1521/sivdb as sysdba
+
+
+
+========practice=========================================================================
+
+[oracle@siva ~]$ ifconfig
+enp0s3: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.0.249  netmask 255.255.255.0  broadcast 192.168.0.255
+        inet6 fe80::7f5b:b293:2571:d46f  prefixlen 64  scopeid 0x20<link>
+        ether 08:00:27:39:a1:b7  txqueuelen 1000  (Ethernet)
+        RX packets 244  bytes 239580 (233.9 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 157  bytes 15147 (14.7 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 48  bytes 4080 (3.9 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 48  bytes 4080 (3.9 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+virbr0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 192.168.122.1  netmask 255.255.255.0  broadcast 192.168.122.255
+        ether 52:54:00:b2:d4:55  txqueuelen 1000  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+[oracle@siva ~]$ . oraenv
+ORACLE_SID = [sivdb] ? sivdb
+The Oracle base has been set to /u01/app/oracle
+[oracle@siva ~]$ vi /etc/hosts
+[oracle@siva ~]$ cd $ORACLE_HOME/network/admin
+[oracle@siva admin]$ ll
+total 12
+-rw-r--r--. 1 oracle oinstall  474 Nov 23 18:32 listener.ora
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+-rw-r--r--. 1 oracle oinstall  341 Nov 23 18:41 tnsnames.ora
+[oracle@siva admin]$ cd
+[oracle@siva ~]$ vi /etc/hosts
+[oracle@siva ~]$ pwd
+/home/oracle
+[oracle@siva ~]$ cd $ORACLE_HOME/network/admin
+[oracle@siva admin]$ 
+[oracle@siva admin]$ ll
+total 12
+-rw-r--r--. 1 oracle oinstall  474 Nov 23 18:32 listener.ora
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+-rw-r--r--. 1 oracle oinstall  341 Nov 23 18:41 tnsnames.ora
+[oracle@siva admin]$ rm *.ora
+[oracle@siva admin]$ ll
+total 4
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+[oracle@siva admin]$ netmgr
+
+[oracle@siva admin]$ 
+[oracle@siva admin]$ ll
+total 12
+-rw-r--r--. 1 oracle oinstall  466 Nov 24 09:13 listener.ora
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+-rw-r--r--. 1 oracle oinstall  341 Nov 24 09:13 tnsnames.ora
+[oracle@siva admin]$ cat listener.ora
+# listener.ora Network Configuration File: /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+# Generated by Oracle configuration tools.
+
+SID_LIST_LISTENER =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = sivdb)
+      (ORACLE_HOME = /u01/app/oracle/product/19.0.0.0/dbhome_1)
+      (SID_NAME = sivdb)
+    )
+  )
+
+LISTENER =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = sivdb)(PORT = 1521))
+  )
+
+ADR_BASE_LISTENER = /u01/app/oracle
+
+[oracle@siva admin]$ cat /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+192.168.0.139 raju.com raju google.com
+[oracle@siva admin]$ ll
+total 12
+-rw-r--r--. 1 oracle oinstall  466 Nov 24 09:13 listener.ora
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+-rw-r--r--. 1 oracle oinstall  341 Nov 24 09:13 tnsnames.ora
+[oracle@siva admin]$ netmgr
+[oracle@siva admin]$ cat /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+192.168.0.139 raju.com raju google.com
+[oracle@siva admin]$ cat /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+192.168.0.139 raju.com raju google.com
+[oracle@siva admin]$ cat listener.ora
+# listener.ora Network Configuration File: /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+# Generated by Oracle configuration tools.
+
+SID_LIST_LISTENER =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = sivdb)
+      (ORACLE_HOME = /u01/app/oracle/product/19.0.0.0/dbhome_1)
+      (SID_NAME = sivdb)
+    )
+  )
+
+LISTENER =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.249)(PORT = 1521))
+  )
+
+ADR_BASE_LISTENER = /u01/app/oracle
+
+[oracle@siva admin]$ lsnrctl start LISTENER
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 24-NOV-2024 09:19:54
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Starting /u01/app/oracle/product/19.0.0.0/dbhome_1/bin/tnslsnr: please wait...
+
+TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+System parameter file is /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Log messages written to /u01/app/oracle/diag/tnslsnr/siva/listener/alert/log.xml
+Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.0.249)(PORT=1521)))
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.0.249)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     LISTENER
+Version                   TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+Start Date                24-NOV-2024 09:19:54
+Uptime                    0 days 0 hr. 0 min. 0 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/siva/listener/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.0.249)(PORT=1521)))
+Services Summary...
+Service "sivdb" has 1 instance(s).
+  Instance "sivdb", status UNKNOWN, has 1 handler(s) for this service...
+The command completed successfully
+[oracle@siva admin]$ sqlplus sys/oracle@con_sivdb as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sun Nov 24 09:20:59 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> startup;
+ORACLE instance started.
+
+Total System Global Area 1543500144 bytes
+Fixed Size		    8896880 bytes
+Variable Size		  922746880 bytes
+Database Buffers	  603979776 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+Database opened.
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@siva admin]$ ll
+total 12
+-rw-r--r--. 1 oracle oinstall  474 Nov 24 09:16 listener.ora
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+-rw-r--r--. 1 oracle oinstall  341 Nov 24 09:13 tnsnames.ora
+[oracle@siva admin]$ cd /u01
+[oracle@siva u01]$ ll
+total 49608
+drwxr-xr-x. 4 oracle oinstall       40 Nov 12 12:27 app
+drwxr-xr-x. 2 oracle oinstall        6 Nov 13 15:32 archive_log
+drwxr-xr-x. 2 oracle oinstall       34 Nov 21 16:50 dir1
+drwxr-xr-x. 2 oracle oinstall       69 Nov 22 16:50 dir3
+-rw-r--r--. 1 oracle oinstall        0 Nov 24 09:20 file1
+drwxr-xr-x. 3 oracle oinstall       26 Nov 13 11:54 multiplex
+-rw-r--r--. 1 oracle oinstall        0 Nov 23 18:12 siva9
+-rw-r-----. 1 oracle oinstall 50798592 Nov 24 09:21 undo02.dbf
+[oracle@siva u01]$ cd
+[oracle@siva ~]$ cd /u01
+[oracle@siva u01]$ ll
+total 49608
+drwxr-xr-x. 4 oracle oinstall       40 Nov 12 12:27 app
+drwxr-xr-x. 2 oracle oinstall        6 Nov 13 15:32 archive_log
+drwxr-xr-x. 2 oracle oinstall       34 Nov 21 16:50 dir1
+drwxr-xr-x. 2 oracle oinstall       69 Nov 22 16:50 dir3
+-rw-r--r--. 1 oracle oinstall        0 Nov 24 09:20 file1
+drwxr-xr-x. 3 oracle oinstall       26 Nov 13 11:54 multiplex
+-rw-r--r--. 1 oracle oinstall        0 Nov 23 18:12 siva9
+-rw-r-----. 1 oracle oinstall 50798592 Nov 24 09:21 undo02.dbf
+[oracle@siva u01]$ cat file1
+[oracle@siva u01]$ cat >>file1
+hii bro welcome to my world[oracle@siva u01]$ vi file1
+[oracle@siva u01]$ scp /u01/file1 oracle@192.168.0.140:/u01
+The authenticity of host '192.168.0.140 (192.168.0.140)' can't be established.
+ECDSA key fingerprint is SHA256:nBOnOdVVx2ma2Lp6ItExTf13gtujVRaeHvJF0zMfYms.
+ECDSA key fingerprint is MD5:11:e3:34:6b:cc:f5:39:a9:f3:98:47:1e:1e:6b:fc:fb.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '192.168.0.140' (ECDSA) to the list of known hosts.
+oracle@192.168.0.140's password: 
+file1                                                                                                           100%   28     4.4KB/s   00:00    
+[oracle@siva u01]$ cd
+[oracle@siva ~]$ vi /etc/hosts
+[oracle@siva ~]$ scp oracle@192.168.0.140:/uol/ /uo1/app
+oracle@192.168.0.140's password: 
+scp: /uol: No such file or directory
+[oracle@siva ~]$ scp oracle@192.168.0.140:/uol/app/ /uo1/
+oracle@192.168.0.140's password: 
+scp: /uol/app: No such file or directory
+[oracle@siva ~]$ scp oracle@192.168.0.140:/uo1/app/ /uo1
+oracle@192.168.0.140's password: 
+scp: /uo1/app: No such file or directory
+[oracle@siva ~]$ scp oracle@192.168.0.140:/uol/app/file1 /uo1/dir1
+oracle@192.168.0.140's password: 
+scp: /uol/app/file1: No such file or directory
+[oracle@siva ~]$ scp oracle@192.168.0.140:/uol/app/file1 /uo1/
+oracle@192.168.0.140's password: 
+scp: /uol/app/file1: No such file or directory
+[oracle@siva ~]$ scp oracle@192.168.0.140:/uo1/app/file1 /uo1/
+oracle@192.168.0.140's password: 
+scp: /uo1/app/file1: No such file or directory
+[oracle@siva ~]$ scp oracle@192.168.0.140:/u01/app/file1 /u01/
+oracle@192.168.0.140's password: 
+file1                                                                                                           100%   28     3.4KB/s   00:00    
+[oracle@siva ~]$ cd /network/admin
+bash: cd: /network/admin: No such file or directory
+[oracle@siva ~]$ cd /network/admin/
+bash: cd: /network/admin/: No such file or directory
+[oracle@siva ~]$ cd /u01
+[oracle@siva u01]$ ll
+total 49612
+drwxr-xr-x. 4 oracle oinstall       40 Nov 12 12:27 app
+drwxr-xr-x. 2 oracle oinstall        6 Nov 13 15:32 archive_log
+drwxr-xr-x. 2 oracle oinstall       34 Nov 21 16:50 dir1
+drwxr-xr-x. 2 oracle oinstall       69 Nov 22 16:50 dir3
+-rw-r--r--. 1 oracle oinstall       28 Nov 24 09:33 file1
+drwxr-xr-x. 3 oracle oinstall       26 Nov 13 11:54 multiplex
+-rw-r--r--. 1 oracle oinstall        0 Nov 23 18:12 siva9
+-rw-r-----. 1 oracle oinstall 50798592 Nov 24 09:33 undo02.dbf
+[oracle@siva u01]$ cd dir1
+[oracle@siva dir1]$ ll
+total 0
+-rw-r--r--. 1 oracle oinstall 0 Nov 21 15:32 filesiva
+-rw-r--r--. 1 oracle oinstall 0 Nov 21 16:50 suri
+[oracle@siva dir1]$ file1
+bash: file1: command not found...
+Similar command is: 'file'
+[oracle@siva dir1]$ cd ..
+[oracle@siva u01]$ ll
+total 49612
+drwxr-xr-x. 4 oracle oinstall       40 Nov 12 12:27 app
+drwxr-xr-x. 2 oracle oinstall        6 Nov 13 15:32 archive_log
+drwxr-xr-x. 2 oracle oinstall       34 Nov 21 16:50 dir1
+drwxr-xr-x. 2 oracle oinstall       69 Nov 22 16:50 dir3
+-rw-r--r--. 1 oracle oinstall       28 Nov 24 09:33 file1
+drwxr-xr-x. 3 oracle oinstall       26 Nov 13 11:54 multiplex
+-rw-r--r--. 1 oracle oinstall        0 Nov 23 18:12 siva9
+-rw-r-----. 1 oracle oinstall 50798592 Nov 24 09:33 undo02.dbf
+[oracle@siva u01]$ vi file1
+[oracle@siva u01]$ cd
+[oracle@siva ~]$ cd $ORACLE_HOME/NETWORK/ADMIN
+bash: cd: /u01/app/oracle/product/19.0.0.0/dbhome_1/NETWORK/ADMIN: No such file or directory
+[oracle@siva ~]$ cd $ORACLE_HOME/network/admin
+[oracle@siva admin]$ ll
+total 12
+-rw-r--r--. 1 oracle oinstall  474 Nov 24 09:16 listener.ora
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+-rw-r--r--. 1 oracle oinstall  341 Nov 24 09:13 tnsnames.ora
+[oracle@siva admin]$ rm *.ora
+[oracle@siva admin]$ netmgr
+[oracle@siva admin]$ ll
+total 8
+-rw-r--r--. 1 oracle oinstall  469 Nov 24 09:43 listener.ora
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+[oracle@siva admin]$ netmgr
+[oracle@siva admin]$ ll
+total 12
+-rw-r--r--. 1 oracle oinstall  469 Nov 24 09:43 listener.ora
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+-rw-r--r--. 1 oracle oinstall  341 Nov 24 09:45 tnsnames.ora
+[oracle@siva admin]$ cat listener.ora
+# listener.ora Network Configuration File: /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+# Generated by Oracle configuration tools.
+
+SID_LIST_LISTENER =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = hrms)
+      (ORACLE_HOME = /u01/app/oracle/product/19.0.0.0/dbhome_1)
+      (SID_NAME = hrms)
+    )
+  )
+
+LISTENER =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = tenali.com)(PORT = 1521))
+  )
+
+ADR_BASE_LISTENER = /u01/app/oracle
+
+[oracle@siva admin]$ vi listener.ora
+[oracle@siva admin]$ cat listener.ora
+# listener.ora Network Configuration File: /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+# Generated by Oracle configuration tools.
+
+SID_LIST_LISTENER =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = hrms)
+      (ORACLE_HOME = /u01/app/oracle/product/19.0.0.0/dbhome_1)
+      (SID_NAME = hrms)
+    )
+  )
+
+LISTENER =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = tenali.com)(PORT = 1522))
+  )
+
+ADR_BASE_LISTENER = /u01/app/oracle
+
+[oracle@siva admin]$ ls -lrt
+total 12
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall  341 Nov 24 09:45 tnsnames.ora
+-rw-r--r--. 1 oracle oinstall  469 Nov 24 09:47 listener.ora
+[oracle@siva admin]$ cat tnsnames.ora
+# tnsnames.ora Network Configuration File: /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/tnsnames.ora
+# Generated by Oracle configuration tools.
+
+CON_SIVDB =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.249)(PORT = 1522))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = sivdb)
+    )
+  )
+
+[oracle@siva admin]$ ll
+total 12
+-rw-r--r--. 1 oracle oinstall  469 Nov 24 09:47 listener.ora
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+-rw-r--r--. 1 oracle oinstall  341 Nov 24 09:45 tnsnames.ora
+[oracle@siva admin]$ rm *.ora
+[oracle@siva admin]$ netmgr
+[oracle@siva admin]$ ll
+total 4
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+[oracle@siva admin]$ netmgr
+[oracle@siva admin]$ ll
+total 12
+-rw-r--r--. 1 oracle oinstall  492 Nov 24 09:53 listener.ora
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rw-r--r--. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+-rw-r--r--. 1 oracle oinstall  333 Nov 24 09:54 tnsnames.ora
+[oracle@siva admin]$ 
+[oracle@siva admin]$ cat listener.ora
+# listener.ora Network Configuration File: /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+# Generated by Oracle configuration tools.
+
+LISTENER_SIVDB =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.249)(PORT = 1521))
+  )
+
+ADR_BASE_LISTENER_SIVDB = /u01/app/oracle
+
+SID_LIST_LISTENER_SIVDB =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = sivdb)
+      (ORACLE_HOME = /u01/app/oracle/product/19.0.0.0/dbhome_1)
+      (SID_NAME = sivdb)
+    )
+  )
+
+[oracle@siva admin]$ cat tnsnames.ora
+# tnsnames.ora Network Configuration File: /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/tnsnames.ora
+# Generated by Oracle configuration tools.
+
+CON_SIVDB =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = sivdb)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = sivdb)
+    )
+  )
+
+[oracle@siva admin]$ lsnrctl start LISTENER_SIVDB
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 24-NOV-2024 09:56:30
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+TNS-01106: Listener using listener name LISTENER has already been started
+[oracle@siva admin]$ ps -ef|grep tns
+root        23     2  0 09:00 ?        00:00:00 [netns]
+oracle    4744     1  0 09:19 ?        00:00:00 /u01/app/oracle/product/19.0.0.0/dbhome_1/bin/tnslsnr LISTENER -inherit
+oracle    8033  3187  0 09:57 pts/0    00:00:00 grep --color=auto tns
+[oracle@siva admin]$ kill -9 4744
+[oracle@siva admin]$ lsnrctl start LISTENER_SIVDB
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 24-NOV-2024 09:57:41
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Starting /u01/app/oracle/product/19.0.0.0/dbhome_1/bin/tnslsnr: please wait...
+
+TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+System parameter file is /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Log messages written to /u01/app/oracle/diag/tnslsnr/siva/listener_sivdb/alert/log.xml
+Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.0.249)(PORT=1521)))
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.0.249)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     LISTENER_SIVDB
+Version                   TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+Start Date                24-NOV-2024 09:57:41
+Uptime                    0 days 0 hr. 0 min. 0 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/siva/listener_sivdb/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.0.249)(PORT=1521)))
+Services Summary...
+Service "sivdb" has 1 instance(s).
+  Instance "sivdb", status UNKNOWN, has 1 handler(s) for this service...
+The command completed successfully
+[oracle@siva admin]$ cat tnsname.ora
+cat: tnsname.ora: No such file or directory
+[oracle@siva admin]$ cat tnsnames.ora
+# tnsnames.ora Network Configuration File: /u01/app/oracle/product/19.0.0.0/dbhome_1/network/admin/tnsnames.ora
+# Generated by Oracle configuration tools.
+
+CON_SIVDB =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = sivdb)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = sivdb)
+    )
+  )
+
+[oracle@siva admin]$ sqlplus @oracle192.168.0.249:sivdb as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sun Nov 24 09:59:03 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+SP2-0310: unable to open file "oracle192.168.0.249:sivdb"
+Enter user-name: 
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+Enter user-name: 
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+Enter user-name: 
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+SP2-0157: unable to CONNECT to ORACLE after 3 attempts, exiting SQL*Plus
+[oracle@siva admin]$ 
+[oracle@siva admin]$ 
+[oracle@siva admin]$ 
+[oracle@siva admin]$ cd
+[oracle@siva ~]$ sqlplus sys/oracle@192.168.0.249:1521/sivdb as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sun Nov 24 10:01:38 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> shut immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> 
