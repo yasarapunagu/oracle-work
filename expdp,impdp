@@ -1,0 +1,804 @@
+Checking for the manmaded users LIST
+SQL> select username from dba_users where oracle_maintained='N';
+SQL> select username from dba_users where oracle_maintained='Y';(for system) 
+
+USERNAME
+--------------------------------------------------------------------------------
+SOE
+SCOTT
+
+1. creating a directory in os level
+[oracle@oraclept ~]$	mkdir -p /u01/backups
+
+
+2. connecting to sqlplus and creating a directory by logical
+[oracle@oraclept ~]$ sqlplus / as sysdba
+
+
+create directory backups_dir as '/u01/backups';
+
+3. Checking for pre-defined directories available or not
+desc dba_directories
+Name					   Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ OWNER					   NOT NULL VARCHAR2(128)
+ DIRECTORY_NAME 			   NOT NULL VARCHAR2(128)
+ DIRECTORY_PATH 				    VARCHAR2(4000)
+ ORIGIN_CON_ID					    NUMBER
+
+
+set pages 200
+set lines 200
+set colsep |
+col owner for a10
+col directory_name for a30
+col directory_path for a50
+select owner, DIRECTORY_NAME,DIRECTORY_PATH from dba_directories;
+ 
+
+OWNER	  |DIRECTORY_NAME		 |DIRECTORY_PATH
+----------|------------------------------|--------------------------------------------------
+SYS	  	  |BACKUPS_DIR			 |/u01/backups (created by us)
+SYS	  	  |DP				     |/u01/datapump_dir
+SYS	  	  |SDO_DIR_WORK 		 |
+SYS	      |SDO_DIR_ADMIN		 |/u01/app/oracle/product/19.0.0.0/dbhome_1/md/admin
+SYS	   	  |XMLDIR			     |/u01/app/oracle/product/19.0.0.0/dbhome_1/rdbms/xm
+		  |						 |l
+
+SYS	 	  |XSDDIR			 	 |/u01/app/oracle/product/19.0.0.0/dbhome_1/rdbms/xm
+		  |				   		 |l/schema
+
+SYS	      |OPATCH_INST_DIR		 |/u01/app/oracle/product/19.0.0.0/dbhome_1/OPatch
+SYS	      |ORACLE_OCM_CONFIG_DIR2	 |/u01/app/oracle/product/19.0.0.0/dbhome_1/ccr/stat
+		  |				 |e
+
+SYS	  	  |ORACLE_BASE			 |/u01/app/oracle
+SYS	  	  |ORACLE_HOME			 |/u01/app/oracle/product/19.0.0.0/dbhome_1
+SYS	 	  |ORACLE_OCM_CONFIG_DIR	 |/u01/app/oracle/product/19.0.0.0/dbhome_1/ccr/stat
+		  |				 |e
+
+SYS	 	  |DATA_PUMP_DIR		 |/u01/app/oracle/admin/proddb/dpdump/
+SYS	  	  |OPATCH_SCRIPT_DIR		 |/u01/app/oracle/product/19.0.0.0/dbhome_1/QOpatch
+SYS	 	  |OPATCH_LOG_DIR		 |/u01/app/oracle/product/19.0.0.0/dbhome_1/rdbms/lo
+		  |				 |g
+
+SYS	  |JAVA$JOX$CUJS$DIRECTORY$	 |/u01/app/oracle/product/19.0.0.0/dbhome_1/javavm/a
+	  |				 |dmin/
+	  
+	  
+	  
+	  
+  
+=========
+4. ESTIMATION OF FULL BACKUP / User / table 
+=========
+ORA-39201: Dump files are not supported for estimate only jobs.
+[oracle@oraclept ~]$ expdp directory=backups_dir logfile=Full_proddb_02122024.log full=y estimate_only=y (full database estimation)
+
+expdp directory=backups_dir logifile=soe_full_user_0121.log schemas=soe estimate_only=y (user level estimation)
+
+expdp directory=backups_dir logfile=scott_tables_details.log tables=scott.emp estimate_only=y (table level estimation)
+
+username: / as sysdba
+Password: (enter)
+
+
+
+
+
+====================
+5.Dtabase backup : Full Database / User / table
+====================
+expdp directory=backups_dir dumpfile=Full_proddb_021224.dmp logfile=full_proddb_02122024.log full=y  (full database backup)
+expdp directory=backups_dir dumpfile=scott_user_1bkp.dmp logfile=scott_bkp_full_details.log schemas=scottt,wmsys (user levle backup)
+expdp directory=backups_dir dumpfile=scott_dept_table_bkp.dmp logfile=scott_dept_bkp.log tables=scott.dept (table level backup)
+
+
+two users tables details taking as backup
+expdp directory=backups_dir dumpfile=ful_schema_scott_soe.dmp logfile=schemas_soe_scott.log tables=scott.emp,scott.dept,soe.emp,soe.dept
+. . exported "SOE"."EMP"                                 50.95 KB     879 rows
+. . exported "SCOTT"."EMP"                               8.773 KB      14 rows
+. . exported "SCOTT"."DEPT"                              6.023 KB       4 rows
+. . exported "SOE"."DEPT"                                5.632 KB       7 rows
+Master table "SYS"."SYS_EXPORT_TABLE_01" successfully loaded/unloaded
+******************************************************************************
+Dump file set for SYS.SYS_EXPORT_TABLE_01 is:
+  /u01/backups/ful_schema_scott_soe.dmp
+Job "SYS"."SYS_EXPORT_TABLE_01" successfully completed at Tue Dec 3 16:04:33 2024 elapsed 0 00:00:07
+
+username: / as sysdba
+Password: (enter)
+
+
+
+
+estimating the scott user DATA:
+
+
+Starting "SYS"."SYS_EXPORT_SCHEMA_01":  /******** AS SYSDBA directory=backups_dir logfile=proddb_scott_02124.log schemas=scott estimate_only=y 
+Estimate in progress using BLOCKS method...
+Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+.  estimated "SCOTT"."DEPT"                                 64 KB
+.  estimated "SCOTT"."EMP"                                  64 KB
+.  estimated "SCOTT"."SALGRADE"                             64 KB
+.  estimated "SCOTT"."BONUS"                                 0 KB
+Total estimation using BLOCKS method: 192 KB
+Job "SYS"."SYS_EXPORT_SCHEMA_01" successfully completed at Mon Dec 2 17:41:25 2024 elapsed 0 00:00:02
+
+
+_________________________________________________________________________
+Here to write the notes
+
+without entering username executing the expdp file:
+
+
+expdp \"/ as sysdba\" directory=backups_dir dumpfile=Proddb_scott_dept_0312.dmp logfile=proddb_scott_dept.log tables=scott.dept
+Password:
+
+Connected to: Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Starting "SYS"."SYS_EXPORT_TABLE_01":  "/******** AS SYSDBA" directory=backups_dir dumpfile=Proddb_scott_dept_0312.dmp logfile=proddb_scott_dept.log tables=scott.dept 
+Processing object type TABLE_EXPORT/TABLE/TABLE_DATA
+Processing object type TABLE_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+Processing object type TABLE_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+Processing object type TABLE_EXPORT/TABLE/STATISTICS/MARKER
+Processing object type TABLE_EXPORT/TABLE/TABLE
+Processing object type TABLE_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+. . exported "SCOTT"."DEPT"                              6.023 KB       4 rows
+Master table "SYS"."SYS_EXPORT_TABLE_01" successfully loaded/unloaded
+******************************************************************************
+Dump file set for SYS.SYS_EXPORT_TABLE_01 is:
+  /u01/backups/Proddb_scott_dept_0312.dmp
+Job "SYS"."SYS_EXPORT_TABLE_01" successfully completed at Tue Dec 3 14:26:14 2024 elapsed 0 00:00:12
+
+
+
+
+
+==============
+using parfile:
+==============
+
+Creating parfile and giving the expdp details in that file, which is used to connect and take backup directly without username and password
+
+entering the expdp QUERY into "expdp_soe.par"
+[oracle@srv1 datapump]$ vi expdp_soe.par
+enter the details below into vi editor
+userid="sys/oracle as sysdba" directory=backups_dir dumpfile=ORADB_SOE_271_%U.dmp logfile=ORADB_SOE_271101.log schemas=soe
+
+
+viewing the "expdp_soe.par"
+[oracle@srv1 datapump]$ cat expdp_soe.par 
+
+
+
+[oracle@srv1 datapump]$ expdp parfile=expdp_soe.par
+Connected to: Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Starting "SYS"."SYS_EXPORT_SCHEMA_01":  sys/******** AS SYSDBA parfile=expdp_soe.par 
+Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+Processing object type SCHEMA_EXPORT/PACKAGE/PACKAGE_BODY
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/FUNCTIONAL_INDEX/INDEX_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+Processing object type SCHEMA_EXPORT/STATISTICS/MARKER
+Processing object type SCHEMA_EXPORT/USER
+Processing object type SCHEMA_EXPORT/SYSTEM_GRANT
+Processing object type SCHEMA_EXPORT/ROLE_GRANT
+Processing object type SCHEMA_EXPORT/DEFAULT_ROLE
+Processing object type SCHEMA_EXPORT/TABLESPACE_QUOTA
+Processing object type SCHEMA_EXPORT/PRE_SCHEMA/PROCACT_SCHEMA
+Processing object type SCHEMA_EXPORT/SEQUENCE/SEQUENCE
+Processing object type SCHEMA_EXPORT/TABLE/TABLE
+Processing object type SCHEMA_EXPORT/TABLE/IDENTITY_COLUMN
+Processing object type SCHEMA_EXPORT/PACKAGE/PACKAGE_SPEC
+Processing object type SCHEMA_EXPORT/FUNCTION/FUNCTION
+Processing object type SCHEMA_EXPORT/PROCEDURE/PROCEDURE
+Processing object type SCHEMA_EXPORT/PACKAGE/COMPILE_PACKAGE/PACKAGE_SPEC/ALTER_PACKAGE_SPEC
+Processing object type SCHEMA_EXPORT/FUNCTION/ALTER_FUNCTION
+Processing object type SCHEMA_EXPORT/PROCEDURE/ALTER_PROCEDURE
+Processing object type SCHEMA_EXPORT/VIEW/VIEW
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/INDEX
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/FUNCTIONAL_INDEX/INDEX
+Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/REF_CONSTRAINT
+. . exported "SOE"."ORDER_ITEMS"                         170.4 MB 3735896 rows
+. . exported "SOE"."ORDERS"                              114.9 MB 1352070 rows
+. . exported "SOE"."EMP2"                                42.35 MB  900096 rows
+. . exported "SOE"."INVENTORIES"                         15.27 MB  902171 rows
+. . exported "SOE"."LOGON"                               9.065 MB  442208 rows
+. . exported "SOE"."CUSTOMERS"                           4.983 MB   45703 rows
+. . exported "SOE"."ADDRESSES"                           4.084 MB   55703 rows
+. . exported "SOE"."CARD_DETAILS"                        2.402 MB   55703 rows
+. . exported "SOE"."PRODUCT_DESCRIPTIONS"                224.1 KB    1000 rows
+. . exported "SOE"."PRODUCT_INFORMATION"                 186.4 KB    1000 rows
+. . exported "SOE"."DEPT2"                               121.5 KB    7168 rows
+. . exported "SOE"."EMP"                                 50.95 KB     879 rows
+. . exported "SOE"."WAREHOUSES"                          36.03 KB    1000 rows
+. . exported "SOE"."JOB_HISTORY"                         14.60 KB     246 rows
+. . exported "SOE"."JOBS"                                5.976 KB      23 rows
+. . exported "SOE"."ORDERENTRY_METADATA"                 5.609 KB       4 rows
+. . exported "SOE"."DEPT"                                5.632 KB       7 rows
+. . exported "SOE"."V"                                       0 KB       0 rows
+Master table "SYS"."SYS_EXPORT_SCHEMA_01" successfully loaded/unloaded
+******************************************************************************
+Dump file set for SYS.SYS_EXPORT_SCHEMA_01 is:
+  /u01/backups/ORADB_SOE_271_01.dmp
+Job "SYS"."SYS_EXPORT_SCHEMA_01" successfully completed at Mon Dec 2 17:54:36 2024 elapsed 0 00:00:19
+
+
+=================================
+HIGHER VERSION TO LOWER VERSION
+=================================
+Going from 19c version to 12c to take backup
+
+[oracle@oraclept ~]$ expdp directory=backups_dir dumpfile=prodb_soe_0222_12C.dmp logfile=proddb_soe_0212_12C.log schemas=soe version=12.0
+
+
+If the backup size more then making that backup in partitions
+
+expdp directory=backups_dir dumpfile=full_proddb_031224_12C_00%u.dmp logfile=full_proddb_bkp.log full=y version=12.1 filesize=50M
+Dump file set for SYS.SYS_EXPORT_FULL_02 is:
+  /u01/backups/full_proddb_031224_12C_0001.dmp
+  /u01/backups/full_proddb_031224_12C_0002.dmp
+  /u01/backups/full_proddb_031224_12C_0003.dmp
+  /u01/backups/full_proddb_031224_12C_0004.dmp
+  /u01/backups/full_proddb_031224_12C_0005.dmp
+  /u01/backups/full_proddb_031224_12C_0006.dmp
+  /u01/backups/full_proddb_031224_12C_0007.dmp
+  /u01/backups/full_proddb_031224_12C_0008.dmp
+Job "SYS"."SYS_EXPORT_FULL_02" completed with 1 error(s) at Tue Dec 3 14:52:58 2024 elapsed 0 00:01:17
+
+
+
+
+creating .dmp of single bkp into two other locations and .log file saved in /u01/backups
+
+
+
+expdp directory=backups_dir dumpfile=backups_dir:full_proddb_0312%U,datapump_dir:full_proddb_0311%U.dmp parallel=2 full=y logfile=proddb_full_0311.log
+Dump file set for SYS.SYS_EXPORT_FULL_02 is:
+  /u01/backups/full_proddb_031201.dmp
+  /u01/datapump_dir/full_proddb_031101.dmp
+Job "SYS"."SYS_EXPORT_FULL_02" successfully completed at Tue Dec 3 15:10:33 2024 elapsed 0 00:01:30
+
+
+
+============
+COMPRESSION
+============
+
+expdp directoty=backups_dir dumpfile=full_proddb_0311_COMPRESSED%U.dmp logfile=full_proddbCOMPRESSED.log full=y COMPRESSION=all
+
+Total estimation using BLOCKS method: 627.4 MB
+Job "SYS"."SYS_EXPORT_FULL_02" successfully completed at Tue Dec 3 15:51:48 2024 elapsed 0 00:00:09
+
+
+/u01/backups size compressed to 84M
+-rw-r-----. 1 oracle oinstall  84M Dec  3 15:47 full_proddb_0311_COMPRESSED01.dmp
+
+
+[oracle@venky backups]$ impdp directory=backups_dir dumpfile=venky_user_schema.dmp logfile=venky_imporiting_file.log remap_schema=venky:ven
+
+Import: Release 19.0.0.0.0 - Production on Wed Dec 4 11:33:53 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+Username: / as sysdba
+Password: 
+
+
+
+
+impdp \"sys/oracle@to_hrms as sysdba\" directory=datapump_dir dumpfile=ORADB_SOE_2711_12C.dmp logfile=impdp_ORADB_SOE_2711_01.dmp remap_tablespace=SOETBS:users
+
+impdp \"sys/oracle@to_hdfc as sysdba\" directory=backups_dir dumpfile=venky_user_schema.dmp logfile=impdp_venky_2711_01.dmp remap_tablespace=SOETBS:users remap_schema =soe:scott
+impdp \"sys/oracle@ as sysdba\" directory=backups_dir dumpfile= logfile=impdp_venky_2711_01.dmp remap_tablespace=HDFCTS
+
+
+impdp \"sys/oracle@to_hrms as sysdba\" directory=datapump_dir dumpfile=Full_oradb_2711_12C_%U.dmp logfile=impdp_soe.log schemas=soe remap_tablespace=soetbs:users remap_schema=soe:test 
+
+
+
+
+
+
+
+
+
+================================================
+TABLE_EXISTS_ACTION=skip/truncate/append/replace
+================================================
+
+impdp \"sys/oracle@to_hrms as sysdba\" directory=datapump_dir dumpfile=Full_oradb_2711_12C_%U.dmp logfile=impdp_soe.log schemas=soe remap_tablespace=soetbs:users remap_schema=soe:test  TABLE_EXISTS_ACTION=REPLACE
+impdp \"sys/oracle@to_hrms as sysdba\" directory=datapump_dir dumpfile=Full_oradb_2711_12C_%U.dmp logfile=impdp_soe.log schemas=soe remap_tablespace=soetbs:users remap_schema=soe:test  TABLE_EXISTS_ACTION=TRUNCATE
+
+
+
+
+
+
+Taking user backup from another source and importing in target source
+and changing username & tablespace of that particular user in target
+
+
+impdp \"sys/oracle as sysdba\" directory=backups_dir dumpfile=only_tbs_ofvenky.dmp logfile=venky_schema.log remap_tablespace=venkyts:users remap_schema=venky:v TABLE_EXISTS_ACTION=REPLACE
+
+
+==========================
+METADATA_ONLY
+==========================
+
+expdp directory=datapump_dir dumpfile=Full_oradb_2711_soe%U.dmp logfile=Full_oradb_2711COMPRESSED.log schemas=soe content=metadata_only
+Connected to: Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Starting "SYS"."SYS_EXPORT_SCHEMA_01":  /******** AS SYSDBA directory=backups_dir dumpfile=full_schema_031224%U.dmp logfile=full_schemasCOMPRESSED.log schemas=scott,soe content=metadata_only 
+Processing object type SCHEMA_EXPORT/PACKAGE/PACKAGE_BODY
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/FUNCTIONAL_INDEX/INDEX_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+Processing object type SCHEMA_EXPORT/STATISTICS/MARKER
+Processing object type SCHEMA_EXPORT/USER
+Processing object type SCHEMA_EXPORT/SYSTEM_GRANT
+Processing object type SCHEMA_EXPORT/ROLE_GRANT
+Processing object type SCHEMA_EXPORT/DEFAULT_ROLE
+Processing object type SCHEMA_EXPORT/TABLESPACE_QUOTA
+Processing object type SCHEMA_EXPORT/PRE_SCHEMA/PROCACT_SCHEMA
+Processing object type SCHEMA_EXPORT/SEQUENCE/SEQUENCE
+Processing object type SCHEMA_EXPORT/TABLE/TABLE
+Processing object type SCHEMA_EXPORT/TABLE/IDENTITY_COLUMN
+Processing object type SCHEMA_EXPORT/PACKAGE/PACKAGE_SPEC
+Processing object type SCHEMA_EXPORT/FUNCTION/FUNCTION
+Processing object type SCHEMA_EXPORT/PROCEDURE/PROCEDURE
+Processing object type SCHEMA_EXPORT/PACKAGE/COMPILE_PACKAGE/PACKAGE_SPEC/ALTER_PACKAGE_SPEC
+Processing object type SCHEMA_EXPORT/FUNCTION/ALTER_FUNCTION
+Processing object type SCHEMA_EXPORT/PROCEDURE/ALTER_PROCEDURE
+Processing object type SCHEMA_EXPORT/VIEW/VIEW
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/INDEX
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/FUNCTIONAL_INDEX/INDEX
+Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/REF_CONSTRAINT
+Master table "SYS"."SYS_EXPORT_SCHEMA_01" successfully loaded/unloaded
+******************************************************************************
+Dump file set for SYS.SYS_EXPORT_SCHEMA_01 is:
+  /u01/backups/full_schema_03122401.dmp
+Job "SYS"."SYS_EXPORT_SCHEMA_01" successfully completed at Tue Dec 3 16:53:26 2024 elapsed 0 00:00:15
+
+
+==========================
+DATA_ONLY
+==========================
+
+expdp directory=backups_dir dumpfile=full_schema_031224%U.dmp logfile=full_schemasCOMPRESSED.log schemas=scott,soe content=data_only
+Connected to: Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Starting "SYS"."SYS_EXPORT_SCHEMA_01":  /******** AS SYSDBA directory=backups_dir dumpfile=full_schema_01224%U.dmp logfile=full_schemasCOMPRESSED.log schemas=scott,soe content=data_only 
+Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+. . exported "SOE"."ORDER_ITEMS"                         170.4 MB 3735896 rows
+. . exported "SOE"."ORDERS"                              114.9 MB 1352070 rows
+. . exported "SOE"."EMP2"                                42.35 MB  900096 rows
+. . exported "SOE"."INVENTORIES"                         15.27 MB  902171 rows
+. . exported "SOE"."LOGON"                               9.065 MB  442208 rows
+. . exported "SOE"."CUSTOMERS"                           4.983 MB   45703 rows
+. . exported "SOE"."ADDRESSES"                           4.084 MB   55703 rows
+. . exported "SOE"."CARD_DETAILS"                        2.402 MB   55703 rows
+. . exported "SOE"."PRODUCT_DESCRIPTIONS"                224.1 KB    1000 rows
+. . exported "SOE"."PRODUCT_INFORMATION"                 186.4 KB    1000 rows
+. . exported "SOE"."DEPT2"                               121.5 KB    7168 rows
+. . exported "SOE"."EMP"                                 50.95 KB     879 rows
+. . exported "SOE"."WAREHOUSES"                          36.03 KB    1000 rows
+. . exported "SOE"."JOB_HISTORY"                         14.60 KB     246 rows
+. . exported "SCOTT"."EMP"                               8.773 KB      14 rows
+. . exported "SCOTT"."DEPT"                              6.023 KB       4 rows
+. . exported "SCOTT"."SALGRADE"                          5.953 KB       5 rows
+. . exported "SOE"."JOBS"                                5.976 KB      23 rows
+. . exported "SOE"."ORDERENTRY_METADATA"                 5.609 KB       4 rows
+. . exported "SOE"."DEPT"                                5.632 KB       7 rows
+. . exported "SCOTT"."BONUS"                                 0 KB       0 rows
+. . exported "SOE"."V"                                       0 KB       0 rows
+Master table "SYS"."SYS_EXPORT_SCHEMA_01" successfully loaded/unloaded
+******************************************************************************
+Dump file set for SYS.SYS_EXPORT_SCHEMA_01 is:
+  /u01/backups/full_schema_0122401.dmp
+Job "SYS"."SYS_EXPORT_SCHEMA_01" successfully completed at Tue Dec 3 16:54:27 2024 elapsed 0 00:00:06
+
+
+
+
+==========================
+QUERY,DATA,WHERE,CONDITION
+==========================
+
+expdp directory=backups_dir dumpfile=Full_proddb_2711_QUERY%U.dmp logfile=Full_proddb_2711QUERY.log tables=soe.emp  QUERY=SOE.EMP:\"WHERE DEPT_NO=10\"
+Connected to: Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Starting "SYS"."SYS_EXPORT_TABLE_01":  /******** AS SYSDBA directory=backups_dir dumpfile=Full_proddb_2711_QUERY%U.dmp logfile=Full_proddb_2711QUERY.log tables=soe.emp QUERY=SOE.EMP:"WHERE DEPT_NO=10" 
+Processing object type TABLE_EXPORT/TABLE/TABLE_DATA
+Processing object type TABLE_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+Processing object type TABLE_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+Processing object type TABLE_EXPORT/TABLE/STATISTICS/MARKER
+Processing object type TABLE_EXPORT/TABLE/TABLE
+Processing object type TABLE_EXPORT/TABLE/INDEX/INDEX
+Processing object type TABLE_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+Processing object type TABLE_EXPORT/TABLE/CONSTRAINT/REF_CONSTRAINT
+. . exported "SOE"."EMP"                                 13.96 KB     113 rows
+Master table "SYS"."SYS_EXPORT_TABLE_01" successfully loaded/unloaded
+******************************************************************************
+Dump file set for SYS.SYS_EXPORT_TABLE_01 is:
+  /u01/backups/Full_proddb_2711_QUERY01.dmp
+Job "SYS"."SYS_EXPORT_TABLE_01" successfully completed at Tue Dec 3 17:12:05 2024 elapsed 0 00:00:09
+
+
+
+expdp directory=backups_dir dumpfile=full_proddb_110214_QUERY%U.dmp logfile=full_proddb_0124QUERY.log tables=scott.emp QUERY=SCOTT.EMP:\"WHERE DEPTNO=10\"
+Connected to: Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Starting "SYS"."SYS_EXPORT_TABLE_01":  /******** AS SYSDBA directory=backups_dir dumpfile=full_proddb_110214_QUERY%U.dmp logfile=full_proddb_0124QUERY.log tables=scott.emp QUERY=SCOTT.EMP:"WHERE DEPTNO=10" 
+Processing object type TABLE_EXPORT/TABLE/TABLE_DATA
+Processing object type TABLE_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+Processing object type TABLE_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+Processing object type TABLE_EXPORT/TABLE/STATISTICS/MARKER
+Processing object type TABLE_EXPORT/TABLE/TABLE
+Processing object type TABLE_EXPORT/TABLE/INDEX/INDEX
+Processing object type TABLE_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+Processing object type TABLE_EXPORT/TABLE/CONSTRAINT/REF_CONSTRAINT
+. . exported "SCOTT"."EMP"                               8.328 KB       3 rows
+Master table "SYS"."SYS_EXPORT_TABLE_01" successfully loaded/unloaded
+******************************************************************************
+Dump file set for SYS.SYS_EXPORT_TABLE_01 is:
+  /u01/backups/full_proddb_110214_QUERY01.dmp
+Job "SYS"."SYS_EXPORT_TABLE_01" successfully completed at Tue Dec 3 17:32:57 2024 elapsed 0 00:00:05
+
+
+
+=============
+FLASHBACK_SCN
+=============
+
+sql> select timestamp_to_scn(to_timestamp('05-12-2024 02:10:21','dd-mm-yyyy hh24:mi:ss')) scn from dual;
+sql> select scn_to_timestamp(2011955) from dual;
+sql> select current_scn from v$database;
+
+
+inserted a value into emp table and make commit, now i have 15 rows in that table
+and executing the query below to check how many rows it will backup
+
+
+
+[oracle@oraclept /]$ expdp directory=backups_dir dumpfile=scott_emp_0412.dmp logfile=scott_emp_0415.log tables=scott.emp flashback_scn=5728650
+
+. . exported "SCOTT"."EMP"                               8.812 KB      15 rows
+Master table "SYS"."SYS_EXPORT_TABLE_01" successfully loaded/unloaded
+
+
+
+
+
+Im going to check no of rows, when the emp table has 14 rows 
+expdp directory=backups_dir dumpfile=scott_emp_0412.dmp logfile=scott_emp_0415.log tables=scott.emp flashback_scn=5728314
+
+. . exported "SCOTT"."EMP"                               8.773 KB      14 rows
+Master table "SYS"."SYS_EXPORT_TABLE_01" successfully loaded/unloaded
+
+==============
+FLASHBACK_TIME
+==============
+
+[oracle@srv1 datapump]$ cat fb_time.par
+
+
+copying the below script int par file
+userid="sys/oracle as sysdba"  directory=backups_dir dumpfile=scott_emp_041224.dmp logfile=scott_emp_14.log tables=scott.emp flashback_time="to_timestamp('04-12-24 14:00:00', 'DD-MM-YY HH24:MI:SS')"
+vi fb_time.par
+
+executing the par file
+expdp parfile=fb_time.par
+
+. . exported "SCOTT"."EMP"                               8.773 KB      14 rows
+Master table "SYS"."SYS_EXPORT_TABLE_01" successfully loaded/unloaded
+
+
+
+userid="sys/oracle as sysdba" directory=backups_dir dumpfile=scott_emp_041224.dmp logfile=scott_emp_14.log tables=scott.emp flashback_time="to_timestamp('04-12-24 14:15:00', 'DD-MM-YY HH24:MI:SS')"
+. . exported "SCOTT"."EMP"                               8.812 KB      15 rows
+Master table "SYS"."SYS_EXPORT_TABLE_01" successfully loaded/unloaded
+
+
+
+userid="sys/oracle as sysdba" directory=backups_dir dumpfile=scott_4emp_0411224.dmp logfile=scott_emp_14.log tables=scott.emp flashback_time="to_timestamp('04-12-24 14:30:00', 'DD-MM-YY HH24:MI:SS')"
+. . exported "SCOTT"."EMP"                               8.851 KB      16 rows
+Master table "SYS"."SYS_EXPORT_TABLE_01" successfully loaded/unloaded
+
+================
+GENEARTE DDL
+================
+
+Checking the dmp file valid or not, If it is valid it will execute otherwise it will popup as invalid dump file
+
+[oracle@venky backups]$ impdp directory=backups_dir dumpfile=scott_4emp_0411224.dmp logfile=scott_emp_0306_QUERY.log sqlfile=ddl_expdp.sql
+
+
+Username: / as sysdba
+Password: 
+
+Connected to: Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Master table "SYS"."SYS_SQL_FILE_FULL_01" successfully loaded/unloaded
+Starting "SYS"."SYS_SQL_FILE_FULL_01":  /******** AS SYSDBA directory=backups_dir dumpfile=scott_4emp_0411224.dmp logfile=scott_emp_0306_QUERY.log sqlfile=ddl_expdp.sql 
+Processing object type TABLE_EXPORT/TABLE/TABLE
+Processing object type TABLE_EXPORT/TABLE/INDEX/INDEX
+Processing object type TABLE_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+Processing object type TABLE_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+Processing object type TABLE_EXPORT/TABLE/CONSTRAINT/REF_CONSTRAINT
+Processing object type TABLE_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+Processing object type TABLE_EXPORT/TABLE/STATISTICS/MARKER
+Job "SYS"."SYS_SQL_FILE_FULL_01" successfully completed at Wed Dec 4 15:15:19 2024 elapsed 0 00:00:02
+
+
+
+[oracle@venky backups]$impdp directory=backups_dir dumpfile=scott_4emp_0411224.dmp logfile=scott_emp_0306_QUERY.log sqlfile=ddl_expdp.sql
+Connected to: Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+ORA-39001: invalid argument value
+ORA-39000: bad dump file specification
+ORA-31619: invalid dump file "/u01/backups/scott_4emp_0411224.dmp"
+
+====================
+MULTIPLE DIRECTORIES
+====================
+
+expdp dumpfile=backups_dir:Scott_%U.dmp,datapump_dir:scott_%U.dmp logfile=full_01.log schemas=scott parallel=2
+. . exported "SCOTT"."EMP"                               8.851 KB      16 rows
+. . exported "SCOTT"."DEPT"                              6.023 KB       4 rows
+. . exported "SCOTT"."SALGRADE"                          5.953 KB       5 rows
+. . exported "SCOTT"."BONUS"                                 0 KB       0 rows
+Master table "SYS"."SYS_EXPORT_SCHEMA_01" successfully loaded/unloaded
+******************************************************************************
+Dump file set for SYS.SYS_EXPORT_SCHEMA_01 is:
+  /u01/backups/Scott_01.dmp
+  /u01/datapump_dir/scott_01.dmp
+Job "SYS"."SYS_EXPORT_SCHEMA_01" successfully completed at Wed Dec 4 16:40:27 2024 elapsed 0 00:00:10
+2492
+======================================
+KILL,STOP,RESUME,START,PAUSE EXPDP JOB
+====================================== 
+
+Taking full backup
+
+[oracle@srv1 datapump]$ expdp directory=backups_dir dumpfile=Full_oradb_2711.dmp logfile=Full_oradb_2711.log full=y 
+
+Export: Release 19.0.0.0.0 - Production on Sun Nov 27 13:10:15 2022
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+connecting to take backup
+
+Username: / as sysdba
+Password: 
+
+
+
+here conneted
+
+Connected to: Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Starting "SYS"."SYS_EXPORT_FULL_01":  /******** AS SYSDBA directory=datapump_dir dumpfile=Full_oradb_2711.dmp logfile=Full_oradb_2711.log full=y 
+Processing object type DATABASE_EXPORT/EARLY_OPTIONS/VIEWS_AS_TABLES/TABLE_DATA
+Processing object type DATABASE_EXPORT/NORMAL_OPTIONS/TABLE_DATA
+Processing object type DATABASE_EXPORT/NORMAL_OPTIONS/VIEWS_AS_TABLES/TABLE_DATA
+Processing object type DATABASE_EXPORT/SCHEMA/TABLE/TABLE_DATA
+Processing object type DATABASE_EXPORT/SCHEMA/PACKAGE_BODIES/PACKAGE/PACKAGE_BODY
+Processing object type DATABASE_EXPORT/SCHEMA/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+Processing object type DATABASE_EXPORT/SCHEMA/TABLE/INDEX/STATISTICS/FUNCTIONAL_INDEX/INDEX_STATISTICS
+Processing object type DATABASE_EXPORT/SCHEMA/TABLE/INDEX/STATISTICS/BITMAP_INDEX/INDEX_STATISTICS
+Processing object type DATABASE_EXPORT/SCHEMA/TABLE/STATISTICS/TABLE_STATISTICS
+^C
+Export> stop
+Are you sure you wish to stop this job ([yes]/no): yes
+
+
+
+process stopped
+
+
+to reconnect that process just do as the below
+
+SYS_EXPORT_FULL_01 is the job Name
+
+[oracle@srv1 datapump]$ expdp attach=SYS_EXPORT_FULL_01
+
+Export: Release 19.0.0.0.0 - Production on Sun Nov 27 13:11:02 2022
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+Username: / as sysdba
+Password: 
+
+Connected to: Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+
+Job: SYS_EXPORT_FULL_01
+  Owner: SYS                            
+  Operation: EXPORT                         
+  Creator Privs: TRUE                           
+  GUID: EE6FDE2327B73CBCE053A164A8C07C6E
+  Start Time: Sunday, 27 November, 2022 13:11:07
+  Mode: FULL                           
+  Instance: ORADB
+  Max Parallelism: 1
+  Timezone: +00:00
+  Timezone version: 32
+  Endianness: LITTLE
+  NLS character set: AL32UTF8
+  NLS NCHAR character set: AL16UTF16
+  EXPORT Job Parameters:
+  Parameter Name      Parameter Value:
+     CLIENT_COMMAND        /******** AS SYSDBA directory=datapump_dir dumpfile=Full_oradb_2711.dmp logfile=Full_oradb_2711.log full=y 
+     TRACE                 0
+  State: IDLING                         
+  Bytes Processed: 0
+  Current Parallelism: 1
+  Job Error Count: 0
+  Job heartbeat: 1
+  Dump File: /u01/datapump/Full_oradb_2711.dmp
+    bytes written: 188,416
+  
+Worker 1 Status:
+  Instance ID: 1
+  Instance name: ORADB
+  Host name: srv1.com
+  Object start time: Sunday, 27 November, 2022 13:10:42
+  Object status at: Sunday, 27 November, 2022 13:10:45
+  Process Name: DW00
+  State: UNDEFINED                      
+
+starting backup
+
+
+Export> start
+
+checking for backup Status
+
+
+Export> status
+
+Job: SYS_EXPORT_FULL_01
+  Operation: EXPORT                         
+  Mode: FULL                           
+  State: EXECUTING                      
+  Bytes Processed: 0
+  Current Parallelism: 1
+  Job Error Count: 0
+  Job heartbeat: 1
+  Dump File: /u01/datapump/Full_oradb_2711.dmp
+    bytes written: 204,800
+  
+Worker 1 Status:
+  Instance ID: 1
+  Instance name: ORADB
+  Host name: srv1.com
+  Object start time: Sunday, 27 November, 2022 13:11:16
+  Object status at: Sunday, 27 November, 2022 13:11:16
+  Process Name: DW00
+  State: EXECUTING                      
+
+
+checking for backup Status
+Export> status
+
+Job: SYS_EXPORT_FULL_01
+  Operation: EXPORT                         
+  Mode: FULL                           
+  State: EXECUTING                      
+  Bytes Processed: 0
+  Current Parallelism: 1
+  Job Error Count: 0
+  Job heartbeat: 1
+  Dump File: /u01/datapump/Full_oradb_2711.dmp
+    bytes written: 212,992
+  
+Worker 1 Status:
+  Instance ID: 1
+  Instance name: ORADB
+  Host name: srv1.com
+  Object start time: Sunday, 27 November, 2022 13:11:22
+  Object status at: Sunday, 27 November, 2022 13:11:24
+  Process Name: DW00
+  State: EXECUTING                      
+
+
+killing the backup Process
+
+Export> kill
+Are you sure you wish to stop this job ([yes]/no): yes
+
+
+====================
+creating a user and granting all the privileges and created a table inside the user and inserted
+some values and made commit. Now do the expdp and scp the dmp file to another
+ip user and try to import in that server and get connect to user and check for tables in that user.
+
+
+sqlplus / as sysdba
+
+
+create user venky identified by venky;
+grant connect, resource to venky;
+grant create session to venky;
+alter user venky quota unlimited on users;
+
+Now conn venky/venky
+create table venkytb (slno number, name varchar2(20));
+insert into venkytb values (10, 'venky');
+insert into venkytb values (10, 'venky');
+insert into venkytb values (10, 'venky');
+commit;
+
+exit from SQL
+
+exporting with venky username and venky Password
+
+expdp directory=backups_dir dumpfile=venky_backup_file1.dmp logfile=venky_backup_file.log content=data_only schemas=venky
+
+Username: venky     
+Password: 
+
+Connected to: Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Starting "VENKY"."SYS_EXPORT_SCHEMA_01":  venky/******** directory=backups_dir dumpfile=venky_backup_file1.dmp logfile=venky_backup_file.log content=data_only schemas=venky 
+Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+. . exported "VENKY"."VENKY"                             5.531 KB       6 rows
+Master table "VENKY"."SYS_EXPORT_SCHEMA_01" successfully loaded/unloaded
+******************************************************************************
+Dump file set for VENKY.SYS_EXPORT_SCHEMA_01 is:
+  /u01/backups/venky_backup_file1.dmp
+Job "VENKY"."SYS_EXPORT_SCHEMA_01" successfully completed at Tue Dec 3 19:51:36 2024 elapsed 0 00:00:02
+
+
+
+********If you take users content=data_only, target cannot import that dumpfile because user does not exist error
+so makesure that content=all 
+
+expdp directory=backups_dir dumpfile=venky_backup_file11.dmp logfile=venky_backup_file.log content=all schemas=venky
+Username: venky
+Password: 
+
+Connected to: Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Starting "VENKY"."SYS_EXPORT_SCHEMA_01":  venky/******** directory=backups_dir dumpfile=venky_backup_file11.dmp logfile=venky_backup_file.log content=all schemas=venky 
+Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+Processing object type SCHEMA_EXPORT/STATISTICS/MARKER
+Processing object type SCHEMA_EXPORT/USER
+Processing object type SCHEMA_EXPORT/SYSTEM_GRANT
+Processing object type SCHEMA_EXPORT/ROLE_GRANT
+Processing object type SCHEMA_EXPORT/DEFAULT_ROLE
+Processing object type SCHEMA_EXPORT/TABLESPACE_QUOTA
+Processing object type SCHEMA_EXPORT/PRE_SCHEMA/PROCACT_SCHEMA
+Processing object type SCHEMA_EXPORT/TABLE/TABLE
+Processing object type SCHEMA_EXPORT/TABLE/COMMENT
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/INDEX
+. . exported "VENKY"."VENKY"                             5.531 KB       6 rows
+Master table "VENKY"."SYS_EXPORT_SCHEMA_01" successfully loaded/unloaded
+******************************************************************************
+Dump file set for VENKY.SYS_EXPORT_SCHEMA_01 is:
+  /u01/backups/venky_backup_file11.dmp
+Job "VENKY"."SYS_EXPORT_SCHEMA_01" successfully completed at Tue Dec 3 19:58:22 2024 elapsed 0 00:00:20
+
+
+untill now exort completed and to send dumpfile to another user server, now we are going to connect to
+another user serve, in oracle do create  mkdir -p /u01/backups 
+
+
+check for .dmp file in /u01/backups and copy the .dmp file and make scp to another user server
+
+->scp .dmp location .dmp file 192.168.0.0:/u01/backups
+file sented
+
+
+now in target user try to import
+
+impdp directory=backups_dir dumpfile=venky_backup_file1.dmp logfile=import_venky_frompt.log schemas=venky (in this only we have taken
+data_only so cannot import)
+
+ORA-39034: Table TABLE_DATA:"VENKY"."VENKY" does not exist.
+Job "SYS"."SYS_IMPORT_SCHEMA_01" completed with 1 error(s) at Tue Dec 3 19:54:52 2024 elapsed 0 00:00:01
+
+
+make sure content=all while exporting file 
+now it is imported
+impdp directory=backups_dir dumpfile=venky_backup_file11.dmp logfile=venky_backup_file11.log schemas=venky
+now the process starts and make imported
+
+connect to sql and try to connect user and check for tables and records inside user 
