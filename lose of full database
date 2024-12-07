@@ -1,0 +1,679 @@
+[oracle@oraclept ~]$ . oraenv
+ORACLE_SID = [proddb] ? praoddb
+ORACLE_HOME = [/home/oracle] ? 
+ORACLE_BASE environment variable is not being set since this
+information is not available for the current user ID oracle.
+You can set ORACLE_BASE manually if it is required.
+Resetting ORACLE_BASE to its previous value or ORACLE_HOME
+The Oracle base remains unchanged with value /u01/app/oracle
+[oracle@oraclept ~]$ sqlplus / as sysdba
+bash: sqlplus: command not found...
+[oracle@oraclept ~]$ . oraenv
+ORACLE_SID = [praoddb] ? proddb
+The Oracle base remains unchanged with value /u01/app/oracle
+[oracle@oraclept ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Dec 7 16:12:56 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> exit      
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@oraclept ~]$ cd /u01
+[oracle@oraclept u01]$ ll
+total 8
+drwxrwxrwx. 4 oracle oinstall   40 Dec 26  2023 app
+drwxr-xr-x. 2 oracle oinstall 4096 Dec  5 18:29 backups
+drwxr-xr-x. 2 oracle oinstall   36 Dec 26  2023 datapump_dir
+drwxr-xr-x. 2 oracle oinstall   37 Dec  4 12:41 dump
+drwxr-xr-x. 2 oracle oinstall    6 Dec  5 15:47 rman
+drwxr-xr-x. 2 oracle oinstall 4096 Dec  7 08:43 rman_bkp
+[oracle@oraclept u01]$ rman target /
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Sat Dec 7 16:14:12 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: PRODDB (DBID=896617639)
+
+RMAN> backup list;
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00558: error encountered while parsing input commands
+RMAN-01009: syntax error: found "list": expecting one of: "application, archivelog, as, auxiliary, backuppiece, backupset, backup, channel, check, consistent, controlfilecopy, copies, copy, cumulative, current, database, database root, datafilecopy, datafile, datapump, db_file_name_convert, db_recovery_file_dest, device, diskratio, duration, filesperset, force, format, for, from, full, incremental, keep, maxsetsize, nochecksum, noexclude, nokeep, not, passwordfile, pluggable, pool, proxy, recovery, reuse, section, skipoffline, skip readonly, skipinaccessible, spfile, tablespace, tag, to, validate, ("
+RMAN-01007: at line 1 column 8 file: standard input
+
+RMAN> list backup;
+
+using target database control file instead of recovery catalog
+
+List of Backup Sets
+===================
+
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time     
+------- ---- -- ---------- ----------- ------------ --------------------
+6       Full    797.73M    DISK        00:01:15     05-DEC-2024 15:49:47
+        BP Key: 6   Status: AVAILABLE  Compressed: NO  Tag: TAG20241205T154831
+        Piece Name: /u01/rman_bkp/073buaug_1_1
+  List of Datafiles in backup set 6
+  File LV Type Ckp SCN    Ckp Time             Abs Fuz SCN Sparse Name
+  ---- -- ---- ---------- -------------------- ----------- ------ ----
+  1       Full 4646508    05-DEC-2024 15:48:32              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_system_lrn5hvv7_.dbf
+  4       Full 4646508    05-DEC-2024 15:48:32              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_undotbs1_lrn5k49l_.dbf
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time     
+------- ---- -- ---------- ----------- ------------ --------------------
+7       Full    1.41G      DISK        00:02:04     05-DEC-2024 15:50:36
+        BP Key: 7   Status: AVAILABLE  Compressed: NO  Tag: TAG20241205T154831
+        Piece Name: /u01/rman_bkp/063buaug_1_1
+  List of Datafiles in backup set 7
+  File LV Type Ckp SCN    Ckp Time             Abs Fuz SCN Sparse Name
+  ---- -- ---- ---------- -------------------- ----------- ------ ----
+  3       Full 4646507    05-DEC-2024 15:48:32              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_sysaux_lrn5jnxt_.dbf
+  5       Full 4646507    05-DEC-2024 15:48:32              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_soetbs_lrn6blkm_.dbf
+  7       Full 4646507    05-DEC-2024 15:48:32              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_users_lrn5k5bw_.dbf
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time     
+------- ---- -- ---------- ----------- ------------ --------------------
+8       Full    10.20M     DISK        00:00:01     05-DEC-2024 15:50:56
+        BP Key: 8   Status: AVAILABLE  Compressed: NO  Tag: TAG20241205T155055
+        Piece Name: /u01/rman_bkp/c-896617639-20241205-00
+  SPFILE Included: Modification time: 05-DEC-2024 15:43:20
+  SPFILE db_unique_name: PRODDB
+  Control File Included: Ckp SCN: 4646567      Ckp time: 05-DEC-2024 15:50:55
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time     
+------- ---- -- ---------- ----------- ------------ --------------------
+9       Full    797.19M    DISK        00:02:23     05-DEC-2024 16:39:30
+        BP Key: 9   Status: AVAILABLE  Compressed: NO  Tag: TAG20241205T163706
+        Piece Name: /u01/rman_bkp/0a3budpj_1_1
+  List of Datafiles in backup set 9
+  File LV Type Ckp SCN    Ckp Time             Abs Fuz SCN Sparse Name
+  ---- -- ---- ---------- -------------------- ----------- ------ ----
+  1       Full 4650056    05-DEC-2024 16:37:07              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_system_lrn5hvv7_.dbf
+  4       Full 4650056    05-DEC-2024 16:37:07              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_undotbs1_lrn5k49l_.dbf
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time     
+------- ---- -- ---------- ----------- ------------ --------------------
+10      Full    1.42G      DISK        00:02:30     05-DEC-2024 16:39:37
+        BP Key: 10   Status: AVAILABLE  Compressed: NO  Tag: TAG20241205T163706
+        Piece Name: /u01/rman_bkp/093budpj_1_1
+  List of Datafiles in backup set 10
+  File LV Type Ckp SCN    Ckp Time             Abs Fuz SCN Sparse Name
+  ---- -- ---- ---------- -------------------- ----------- ------ ----
+  3       Full 4650055    05-DEC-2024 16:37:07              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_sysaux_lrn5jnxt_.dbf
+  5       Full 4650055    05-DEC-2024 16:37:07              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_soetbs_lrn6blkm_.dbf
+  7       Full 4650055    05-DEC-2024 16:37:07              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_users_lrn5k5bw_.dbf
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time     
+------- ---- -- ---------- ----------- ------------ --------------------
+11      Full    10.20M     DISK        00:00:00     05-DEC-2024 16:40:19
+        BP Key: 11   Status: AVAILABLE  Compressed: NO  Tag: TAG20241205T164019
+        Piece Name: /u01/rman_bkp/c-896617639-20241205-01
+  SPFILE Included: Modification time: 05-DEC-2024 15:43:20
+  SPFILE db_unique_name: PRODDB
+  Control File Included: Ckp SCN: 4650137      Ckp time: 05-DEC-2024 16:40:19
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time     
+------- ---- -- ---------- ----------- ------------ --------------------
+12      Full    824.30M    DISK        00:02:08     07-DEC-2024 08:40:20
+        BP Key: 12   Status: AVAILABLE  Compressed: NO  Tag: TAG20241207T083812
+        Piece Name: /u01/rman_bkp/0d3c2qfk_1_1
+  List of Datafiles in backup set 12
+  File LV Type Ckp SCN    Ckp Time             Abs Fuz SCN Sparse Name
+  ---- -- ---- ---------- -------------------- ----------- ------ ----
+  1       Full 4781818    07-DEC-2024 08:38:12              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_system_lrn5hvv7_.dbf
+  4       Full 4781818    07-DEC-2024 08:38:12              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_undotbs1_lrn5k49l_.dbf
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time     
+------- ---- -- ---------- ----------- ------------ --------------------
+13      Full    1.42G      DISK        00:04:50     07-DEC-2024 08:43:02
+        BP Key: 13   Status: AVAILABLE  Compressed: NO  Tag: TAG20241207T083812
+        Piece Name: /u01/rman_bkp/0c3c2qfk_1_1
+  List of Datafiles in backup set 13
+  File LV Type Ckp SCN    Ckp Time             Abs Fuz SCN Sparse Name
+  ---- -- ---- ---------- -------------------- ----------- ------ ----
+  3       Full 4781817    07-DEC-2024 08:38:12 4781872      NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_sysaux_lrn5jnxt_.dbf
+  5       Full 4781817    07-DEC-2024 08:38:12              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_soetbs_lrn6blkm_.dbf
+  7       Full 4781817    07-DEC-2024 08:38:12              NO    /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_users_lrn5k5bw_.dbf
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time     
+------- ---- -- ---------- ----------- ------------ --------------------
+14      Full    10.20M     DISK        00:00:01     07-DEC-2024 08:43:19
+        BP Key: 14   Status: AVAILABLE  Compressed: NO  Tag: TAG20241207T084318
+        Piece Name: /u01/rman_bkp/c-896617639-20241207-00
+  SPFILE Included: Modification time: 07-DEC-2024 08:31:37
+  SPFILE db_unique_name: PRODDB
+  Control File Included: Ckp SCN: 4782265      Ckp time: 07-DEC-2024 08:43:19
+
+RMAN> CONFIGURE RETENTION POLICY TO REDUNDANCY 2; # default
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON; # default
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/u01/rman_bkp/%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 2 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE RMAN OUTPUT TO KEEP FOR 7 DAYS; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/rman_bkp/snapcf_DB.f'; # default
+CONFIGURE CHANNEL 1 DEVICE TYPE DISK FORMAT '/u01/rman_bkp/%U';
+CONFIGURE CHANNEL 2 DEVICE TYPE DISK FORMAT '/u01/rman_bkp/%U';
+old RMAN configuration parameters:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 2;
+new RMAN configuration parameters:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 2;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE BACKUP OPTIMIZATION OFF;
+new RMAN configuration parameters:
+CONFIGURE BACKUP OPTIMIZATION OFF;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE DEFAULT DEVICE TYPE TO DISK;
+new RMAN configuration parameters:
+CONFIGURE DEFAULT DEVICE TYPE TO DISK;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+new RMAN configuration parameters:
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/u01/rman_bkp/%F';
+new RMAN configuration parameters:
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/u01/rman_bkp/%F';
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE DEVICE TYPE DISK PARALLELISM 2 BACKUP TYPE TO BACKUPSET;
+new RMAN configuration parameters:
+CONFIGURE DEVICE TYPE DISK PARALLELISM 2 BACKUP TYPE TO BACKUPSET;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1;
+new RMAN configuration parameters:
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1;
+new RMAN configuration parameters:
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE MAXSETSIZE TO UNLIMITED;
+new RMAN configuration parameters:
+CONFIGURE MAXSETSIZE TO UNLIMITED;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE ENCRYPTION FOR DATABASE OFF;
+new RMAN configuration parameters:
+CONFIGURE ENCRYPTION FOR DATABASE OFF;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE ENCRYPTION ALGORITHM 'AES128';
+new RMAN configuration parameters:
+CONFIGURE ENCRYPTION ALGORITHM 'AES128';
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE;
+new RMAN configuration parameters:
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE RMAN OUTPUT TO KEEP FOR 7 DAYS;
+new RMAN configuration parameters:
+CONFIGURE RMAN OUTPUT TO KEEP FOR 7 DAYS;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE;
+new RMAN configuration parameters:
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/rman_bkp/snapcf_DB.f';
+new RMAN configuration parameters:
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/rman_bkp/snapcf_DB.f';
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE CHANNEL 1 DEVICE TYPE DISK FORMAT   '/u01/rman_bkp/%U';
+new RMAN configuration parameters:
+CONFIGURE CHANNEL 1 DEVICE TYPE DISK FORMAT   '/u01/rman_bkp/%U';
+new RMAN configuration parameters are successfully stored
+
+RMAN>delete backup;
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00558: error encountered while parsing input commands
+RMAN-01009: syntax error: found "delete": expecting one of: "auxiliary, connect, format, for, maxopenfiles, maxpiecesize, parms, rate, send, to, comma, ;"
+RMAN-01007: at line 1 column 63 file: standard input
+
+RMAN> delete backup;
+
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=93 device type=DISK
+allocated channel: ORA_DISK_2
+channel ORA_DISK_2: SID=96 device type=DISK
+
+List of Backup Pieces
+BP Key  BS Key  Pc# Cp# Status      Device Type Piece Name
+------- ------- --- --- ----------- ----------- ----------
+6       6       1   1   AVAILABLE   DISK        /u01/rman_bkp/073buaug_1_1
+7       7       1   1   AVAILABLE   DISK        /u01/rman_bkp/063buaug_1_1
+8       8       1   1   AVAILABLE   DISK        /u01/rman_bkp/c-896617639-20241205-00
+9       9       1   1   AVAILABLE   DISK        /u01/rman_bkp/0a3budpj_1_1
+10      10      1   1   AVAILABLE   DISK        /u01/rman_bkp/093budpj_1_1
+11      11      1   1   AVAILABLE   DISK        /u01/rman_bkp/c-896617639-20241205-01
+12      12      1   1   AVAILABLE   DISK        /u01/rman_bkp/0d3c2qfk_1_1
+13      13      1   1   AVAILABLE   DISK        /u01/rman_bkp/0c3c2qfk_1_1
+14      14      1   1   AVAILABLE   DISK        /u01/rman_bkp/c-896617639-20241207-00
+
+Do you really want to delete the above objects (enter YES or NO)? yes
+deleted backup piece
+backup piece handle=/u01/rman_bkp/063buaug_1_1 RECID=7 STAMP=1186933712
+deleted backup piece
+backup piece handle=/u01/rman_bkp/073buaug_1_1 RECID=6 STAMP=1186933712
+deleted backup piece
+backup piece handle=/u01/rman_bkp/c-896617639-20241205-00 RECID=8 STAMP=1186933856
+deleted backup piece
+backup piece handle=/u01/rman_bkp/0a3budpj_1_1 RECID=9 STAMP=1186936627
+deleted backup piece
+backup piece handle=/u01/rman_bkp/093budpj_1_1 RECID=10 STAMP=1186936627
+deleted backup piece
+backup piece handle=/u01/rman_bkp/c-896617639-20241205-01 RECID=11 STAMP=1186936819
+deleted backup piece
+backup piece handle=/u01/rman_bkp/0d3c2qfk_1_1 RECID=12 STAMP=1187080694
+deleted backup piece
+backup piece handle=/u01/rman_bkp/0c3c2qfk_1_1 RECID=13 STAMP=1187080821
+Deleted 4 objects
+
+deleted backup piece
+backup piece handle=/u01/rman_bkp/c-896617639-20241207-00 RECID=14 STAMP=1187080999
+Deleted 5 objects
+
+
+RMAN> list backup;
+
+specification does not match any backup in the repository
+
+RMAN> list backup summary;
+
+specification does not match any backup in the repository
+
+RMAN> backup database;
+
+Starting backup at 07-DEC-2024 16:17:53
+using channel ORA_DISK_1
+using channel ORA_DISK_2
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00005 name=/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_soetbs_lrn6blkm_.dbf
+input datafile file number=00007 name=/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_users_lrn5k5bw_.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_sysaux_lrn5jnxt_.dbf
+channel ORA_DISK_1: starting piece 1 at 07-DEC-2024 16:17:53
+channel ORA_DISK_2: starting full datafile backup set
+channel ORA_DISK_2: specifying datafile(s) in backup set
+input datafile file number=00001 name=/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_system_lrn5hvv7_.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_undotbs1_lrn5k49l_.dbf
+channel ORA_DISK_2: starting piece 1 at 07-DEC-2024 16:17:54
+channel ORA_DISK_2: finished piece 1 at 07-DEC-2024 16:20:35
+piece handle=/u01/rman_bkp/0g3c3ldh_1_1 tag=TAG20241207T161753 comment=NONE
+channel ORA_DISK_2: backup set complete, elapsed time: 00:02:53
+channel ORA_DISK_1: finished piece 1 at 07-DEC-2024 16:20:57
+piece handle=/u01/rman_bkp/0f3c3ldh_1_1 tag=TAG20241207T161753 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:03:04
+Finished backup at 07-DEC-2024 16:20:57
+
+Starting Control File and SPFILE Autobackup at 07-DEC-2024 16:20:58
+piece handle=/u01/rman_bkp/c-896617639-20241207-01 comment=NONE
+Finished Control File and SPFILE Autobackup at 07-DEC-2024 16:20:59
+
+RMAN> exit
+
+
+Recovery Manager complete.
+[oracle@oraclept u01]$ ll
+total 4
+drwxrwxrwx. 4 oracle oinstall   40 Dec 26  2023 app
+drwxr-xr-x. 2 oracle oinstall 4096 Dec  5 18:29 backups
+drwxr-xr-x. 2 oracle oinstall   36 Dec 26  2023 datapump_dir
+drwxr-xr-x. 2 oracle oinstall   37 Dec  4 12:41 dump
+drwxr-xr-x. 2 oracle oinstall    6 Dec  5 15:47 rman
+drwxr-xr-x. 2 oracle oinstall   96 Dec  7 16:20 rman_bkp
+[oracle@oraclept u01]$ cat rman_bkp
+cat: rman_bkp: Is a directory
+[oracle@oraclept u01]$ cat rman_bkp;
+cat: rman_bkp: Is a directory
+[oracle@oraclept u01]$ cd rman_bkp;
+[oracle@oraclept rman_bkp]$ ll
+total 2333464
+-rw-r-----. 1 oracle oinstall 1530798080 Dec  7 16:20 0f3c3ldh_1_1
+-rw-r-----. 1 oracle oinstall  837353472 Dec  7 16:20 0g3c3ldh_1_1
+-rw-r-----. 1 oracle oinstall   10715136 Dec  7 16:20 c-896617639-20241207-01
+-rw-r-----. 1 oracle oinstall   10600448 Dec  7 16:20 snapcf_DB.f
+[oracle@oraclept rman_bkp]$ cd ..
+[oracle@oraclept u01]$ !sq
+sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Dec 7 16:24:53 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> select name from v$datafile;       
+
+NAME
+--------------------------------------------------------------------------------
+/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_system_lrn5hvv7_.dbf
+/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_sysaux_lrn5jnxt_.dbf
+/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_undotbs1_lrn5k49l_.dbf
+/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_soetbs_lrn6blkm_.dbf
+/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_users_lrn5k5bw_.dbf
+
+SQL> select name from v$controlfile;
+
+NAME
+--------------------------------------------------------------------------------
+/u01/app/oracle/oradata/PRODDB/controlfile/o1_mf_lrn5lhl8_.ctl
+/u01/app/oracle/fast_recovery_area/PRODDB/controlfile/o1_mf_lrn5lhlr_.ctl
+
+SQL> select member from v$logfile;
+
+MEMBER
+--------------------------------------------------------------------------------
+/u01/app/oracle/oradata/PRODDB/onlinelog/o1_mf_3_lrn5lkwn_.log
+/u01/app/oracle/fast_recovery_area/PRODDB/onlinelog/o1_mf_3_lrn5ll37_.log
+/u01/app/oracle/oradata/PRODDB/onlinelog/o1_mf_2_lrn5lkwd_.log
+/u01/app/oracle/fast_recovery_area/PRODDB/onlinelog/o1_mf_2_lrn5ll7j_.log
+/u01/app/oracle/oradata/PRODDB/onlinelog/o1_mf_1_lrn5lkw2_.log
+/u01/app/oracle/fast_recovery_area/PRODDB/onlinelog/o1_mf_1_lrn5ll51_.log
+
+6 rows selected.
+
+SQL> select 'rm '|| name from v$datafile 
+  2  union
+  3  select 'rm '|| name from v$controlfile
+  4  union
+  5  select 'rm '|| name from v$logfile;
+select 'rm '|| name from v$logfile
+               *
+ERROR at line 5:
+ORA-00904: "NAME": invalid identifier
+
+
+SQL> select 'rm '|| name from v$datafile
+  2  union
+  3  select 'rm '|| name from v$controlfile
+  4  union
+  5  select 'rm '|| member from v$logfile;
+
+'RM'||NAME
+--------------------------------------------------------------------------------
+rm /u01/app/oracle/fast_recovery_area/PRODDB/controlfile/o1_mf_lrn5lhlr_.ctl
+rm /u01/app/oracle/fast_recovery_area/PRODDB/onlinelog/o1_mf_1_lrn5ll51_.log
+rm /u01/app/oracle/fast_recovery_area/PRODDB/onlinelog/o1_mf_2_lrn5ll7j_.log
+rm /u01/app/oracle/fast_recovery_area/PRODDB/onlinelog/o1_mf_3_lrn5ll37_.log
+rm /u01/app/oracle/oradata/PRODDB/controlfile/o1_mf_lrn5lhl8_.ctl
+rm /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_soetbs_lrn6blkm_.dbf
+rm /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_sysaux_lrn5jnxt_.dbf
+rm /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_system_lrn5hvv7_.dbf
+rm /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_undotbs1_lrn5k49l_.dbf
+rm /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_users_lrn5k5bw_.dbf
+rm /u01/app/oracle/oradata/PRODDB/onlinelog/o1_mf_1_lrn5lkw2_.log
+
+'RM'||NAME
+--------------------------------------------------------------------------------
+rm /u01/app/oracle/oradata/PRODDB/onlinelog/o1_mf_2_lrn5lkwd_.log
+rm /u01/app/oracle/oradata/PRODDB/onlinelog/o1_mf_3_lrn5lkwn_.log
+
+13 rows selected.
+
+SQL> shut abort;
+ORACLE instance shut down.
+SQL> startup nomount;
+ORACLE instance started.
+
+Total System Global Area 1325399808 bytes
+Fixed Size		    8896256 bytes
+Variable Size		  637534208 bytes
+Database Buffers	  671088640 bytes
+Redo Buffers		    7880704 bytes
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@oraclept u01]$ rman target /
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Sat Dec 7 16:36:15 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: PRODDB (not mounted)
+
+RMAN> restore controlfile from '/u01/rman_bkp/c-896617639-20241207-01';
+
+Starting restore at 07-DEC-2024 16:38:38
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=38 device type=DISK
+
+channel ORA_DISK_1: restoring control file
+channel ORA_DISK_1: restore complete, elapsed time: 00:00:01
+output file name=/u01/app/oracle/oradata/PRODDB/controlfile/o1_mf_lrn5lhl8_.ctl
+output file name=/u01/app/oracle/fast_recovery_area/PRODDB/controlfile/o1_mf_lrn5lhlr_.ctl
+Finished restore at 07-DEC-2024 16:38:40
+
+RMAN> alter database mount;
+
+released channel: ORA_DISK_1
+Statement processed
+
+RMAN> restore database;
+
+Starting restore at 07-DEC-2024 16:39:32
+Starting implicit crosscheck backup at 07-DEC-2024 16:39:32
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=44 device type=DISK
+allocated channel: ORA_DISK_2
+channel ORA_DISK_2: SID=45 device type=DISK
+Crosschecked 1 objects
+Crosschecked 1 objects
+Finished implicit crosscheck backup at 07-DEC-2024 16:39:38
+
+Starting implicit crosscheck copy at 07-DEC-2024 16:39:38
+using channel ORA_DISK_1
+using channel ORA_DISK_2
+Finished implicit crosscheck copy at 07-DEC-2024 16:39:38
+
+searching for all files in the recovery area
+cataloging files...
+no files cataloged
+
+using channel ORA_DISK_1
+using channel ORA_DISK_2
+
+channel ORA_DISK_1: starting datafile backup set restore
+channel ORA_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_DISK_1: restoring datafile 00001 to /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_system_lrn5hvv7_.dbf
+channel ORA_DISK_1: restoring datafile 00004 to /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_undotbs1_lrn5k49l_.dbf
+channel ORA_DISK_1: reading from backup piece /u01/rman_bkp/0g3c3ldh_1_1
+channel ORA_DISK_2: starting datafile backup set restore
+channel ORA_DISK_2: specifying datafile(s) to restore from backup set
+channel ORA_DISK_2: restoring datafile 00003 to /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_sysaux_lrn5jnxt_.dbf
+channel ORA_DISK_2: restoring datafile 00005 to /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_soetbs_lrn6blkm_.dbf
+channel ORA_DISK_2: restoring datafile 00007 to /u01/app/oracle/oradata/PRODDB/datafile/o1_mf_users_lrn5k5bw_.dbf
+channel ORA_DISK_2: reading from backup piece /u01/rman_bkp/0f3c3ldh_1_1
+channel ORA_DISK_1: piece handle=/u01/rman_bkp/0g3c3ldh_1_1 tag=TAG20241207T161753
+channel ORA_DISK_1: restored backup piece 1
+channel ORA_DISK_1: restore complete, elapsed time: 00:02:57
+channel ORA_DISK_2: piece handle=/u01/rman_bkp/0f3c3ldh_1_1 tag=TAG20241207T161753
+channel ORA_DISK_2: restored backup piece 1
+channel ORA_DISK_2: restore complete, elapsed time: 00:02:57
+Finished restore at 07-DEC-2024 16:42:37
+
+RMAN> recover database;
+
+Starting recover at 07-DEC-2024 16:43:29
+using channel ORA_DISK_1
+using channel ORA_DISK_2
+
+starting media recovery
+
+archived log for thread 1 with sequence 30 is already on disk as file /u01/app/oracle/fast_recovery_area/PRODDB/onlinelog/o1_mf_3_lrn5ll37_.log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/onlinelog/o1_mf_3_lrn5ll37_.log thread=1 sequence=30
+media recovery complete, elapsed time: 00:00:01
+Finished recover at 07-DEC-2024 16:43:31
+
+RMAN> alter database open;
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of sql statement command at 12/07/2024 16:43:44
+ORA-01589: must use RESETLOGS or NORESETLOGS option for database open
+
+RMAN> alter database open resetlogs;
+
+Statement processed
+
+RMAN> exit
+
+
+Recovery Manager complete.
+[oracle@oraclept u01]$ !sq
+sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Dec 7 16:47:38 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> show user 
+USER is "SYS"
+SQL> conn scott/tiger
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+Warning: You are no longer connected to ORACLE.
+SQL> show users
+SP2-0158: unknown SHOW option "users"
+SQL> dba_users where oracle_mantained='N'
+SP2-0734: unknown command beginning "dba_users ..." - rest of line ignored.
+SQL> select username from dba_users where oracle_mantained='N';
+SP2-0640: Not connected
+SQL> startup;
+SP2-0640: Not connected
+SQL> exit
+[oracle@oraclept u01]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sat Dec 7 16:51:13 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> select username from dba_users where oracle_mantained='N';
+select username from dba_users where oracle_mantained='N'
+                                     *
+ERROR at line 1:
+ORA-00904: "ORACLE_MANTAINED": invalid identifier
+
+
+SQL> desc dba_users
+ Name					   Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ USERNAME				   NOT NULL VARCHAR2(128)
+ USER_ID				   NOT NULL NUMBER
+ PASSWORD					    VARCHAR2(4000)
+ ACCOUNT_STATUS 			   NOT NULL VARCHAR2(32)
+ LOCK_DATE					    DATE
+ EXPIRY_DATE					    DATE
+ DEFAULT_TABLESPACE			   NOT NULL VARCHAR2(30)
+ TEMPORARY_TABLESPACE			   NOT NULL VARCHAR2(30)
+ LOCAL_TEMP_TABLESPACE				    VARCHAR2(30)
+ CREATED				   NOT NULL DATE
+ PROFILE				   NOT NULL VARCHAR2(128)
+ INITIAL_RSRC_CONSUMER_GROUP			    VARCHAR2(128)
+ EXTERNAL_NAME					    VARCHAR2(4000)
+ PASSWORD_VERSIONS				    VARCHAR2(17)
+ EDITIONS_ENABLED				    VARCHAR2(1)
+ AUTHENTICATION_TYPE				    VARCHAR2(8)
+ PROXY_ONLY_CONNECT				    VARCHAR2(1)
+ COMMON 					    VARCHAR2(3)
+ LAST_LOGIN					    TIMESTAMP(9) WITH TIME ZONE
+ ORACLE_MAINTAINED				    VARCHAR2(1)
+ INHERITED					    VARCHAR2(3)
+ DEFAULT_COLLATION				    VARCHAR2(100)
+ IMPLICIT					    VARCHAR2(3)
+ ALL_SHARD					    VARCHAR2(3)
+ PASSWORD_CHANGE_DATE				    DATE
+
+SQL> select username from dba_users where oracle_maintained='N';
+
+USERNAME
+--------------------------------------------------------------------------------
+SOE
+SCOTT
+
+SQL> ^C^C^C    
