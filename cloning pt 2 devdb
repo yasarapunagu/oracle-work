@@ -1,0 +1,1503 @@
+Proddb
+______________________________________________________________________________________________________________________
+
+
+[oracle@oraclept ~]$ cd $ORACLE_HOME/dbs
+[oracle@oraclept dbs]$ ll
+total 10376
+-rw-rw----. 1 oracle oinstall     1544 Dec  9 15:25 hc_proddb.dat
+-rwxrwxrwx. 1 oracle oinstall     3079 May 14  2015 init.ora
+-rw-r--r--. 1 oracle oinstall     1158 Jan  1  2024 initproddb.ora
+-rw-r-----. 1 oracle oinstall       24 Dec 26  2023 lkPRODDB
+-rw-r-----. 1 oracle oinstall     1158 Dec  9 11:08 orapwproddb
+-rw-r-----. 1 oracle oinstall 10600448 Dec  6 19:41 snapcf_proddb.f
+-rw-r-----. 1 oracle oinstall     3584 Dec  9 15:25 spfileproddb.ora
+[oracle@oraclept dbs]$ scp initproddb.ora orapwproddb oracle@192.168.0.127:$ORACLE_HOME/dbs
+The authenticity of host '192.168.0.127 (192.168.0.127)' can't be established.
+ECDSA key fingerprint is SHA256:05Jo5pvDbGgWT9tFI9eGhT3PBVmNujs7iBc/p3cKikk.
+ECDSA key fingerprint is MD5:11:97:40:97:f8:df:e1:f2:40:bb:d9:fd:2e:9f:88:3b.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '192.168.0.127' (ECDSA) to the list of known hosts.
+oracle@192.168.0.127's password: 
+initproddb.ora                                                                                                                                   100% 1158   104.5KB/s   00:00    
+orapwproddb                                                                                                                                      100% 1158   140.0KB/s   00:00    
+[oracle@oraclept dbs]$ cd
+[oracle@oraclept ~]$ cd /u01/rman_bkp
+[oracle@oraclept rman_bkp]$ ll
+total 2580516
+-rw-r-----. 1 oracle oinstall   76695040 Dec  9 14:17 2i3c8n3v_1_1
+-rw-r-----. 1 oracle oinstall   55749120 Dec  9 14:17 2j3c8n3v_1_1
+-rw-r-----. 1 oracle oinstall   41552896 Dec  9 14:17 2k3c8n41_1_1
+-rw-r-----. 1 oracle oinstall   34094592 Dec  9 14:17 2l3c8n41_1_1
+-rw-r-----. 1 oracle oinstall   33908736 Dec  9 14:17 2m3c8n42_1_1
+-rw-r-----. 1 oracle oinstall   14030336 Dec  9 14:17 2n3c8n42_1_1
+-rw-r-----. 1 oracle oinstall    8078848 Dec  9 14:17 2o3c8n43_1_1
+-rw-r-----. 1 oracle oinstall 1330847744 Dec  9 14:17 2p3c8n44_1_1
+-rw-r-----. 1 oracle oinstall 1024966656 Dec  9 14:17 2q3c8n44_1_1
+-rw-r-----. 1 oracle oinstall       5120 Dec  9 14:17 2r3c8n4c_1_1
+-rw-r-----. 1 oracle oinstall   11304960 Dec  9 14:17 c-896617639-20241209-01
+-rw-r-----. 1 oracle oinstall   11190272 Dec  9 14:17 snapcf_DB.f
+[oracle@oraclept rman_bkp]$ ls -lrtah
+total 2.5G
+drwxrwxrwx. 7 oracle oinstall   84 Dec  6 19:46 ..
+-rw-r-----. 1 oracle oinstall  54M Dec  9 14:17 2j3c8n3v_1_1
+-rw-r-----. 1 oracle oinstall  74M Dec  9 14:17 2i3c8n3v_1_1
+-rw-r-----. 1 oracle oinstall  40M Dec  9 14:17 2k3c8n41_1_1
+-rw-r-----. 1 oracle oinstall  33M Dec  9 14:17 2l3c8n41_1_1
+-rw-r-----. 1 oracle oinstall  14M Dec  9 14:17 2n3c8n42_1_1
+-rw-r-----. 1 oracle oinstall  33M Dec  9 14:17 2m3c8n42_1_1
+-rw-r-----. 1 oracle oinstall 7.8M Dec  9 14:17 2o3c8n43_1_1
+-rw-r-----. 1 oracle oinstall 978M Dec  9 14:17 2q3c8n44_1_1
+-rw-r-----. 1 oracle oinstall 1.3G Dec  9 14:17 2p3c8n44_1_1
+-rw-r-----. 1 oracle oinstall 5.0K Dec  9 14:17 2r3c8n4c_1_1
+-rw-r-----. 1 oracle oinstall  11M Dec  9 14:17 snapcf_DB.f
+drwxr-xr-x. 2 oracle oinstall 4.0K Dec  9 14:17 .
+-rw-r-----. 1 oracle oinstall  11M Dec  9 14:17 c-896617639-20241209-01
+[oracle@oraclept rman_bkp]$ rm *
+[oracle@oraclept rman_bkp]$ ll
+total 0
+[oracle@oraclept rman_bkp]$ rman target /
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Mon Dec 9 15:38:46 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: PRODDB (DBID=896617639)
+
+RMAN> crosscheck backup;
+
+\using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=83 device type=DISK
+allocated channel: ORA_DISK_2
+channel ORA_DISK_2: SID=67 device type=DISK
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u01/rman_bkp/2j3c8n3v_1_1 RECID=65 STAMP=1187273855
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u01/rman_bkp/2i3c8n3v_1_1 RECID=66 STAMP=1187273855
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u01/rman_bkp/2k3c8n41_1_1 RECID=67 STAMP=1187273857
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u01/rman_bkp/2l3c8n41_1_1 RECID=68 STAMP=1187273857
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u01/rman_bkp/2n3c8n42_1_1 RECID=69 STAMP=1187273858
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u01/rman_bkp/2m3c8n42_1_1 RECID=70 STAMP=1187273858
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u01/rman_bkp/2o3c8n43_1_1 RECID=71 STAMP=1187273859
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u01/rman_bkp/2q3c8n44_1_1 RECID=72 STAMP=1187273861
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u01/rman_bkp/2p3c8n44_1_1 RECID=73 STAMP=1187273861
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u01/rman_bkp/2r3c8n4c_1_1 RECID=74 STAMP=1187273868
+Crosschecked 5 objects
+
+crosschecked backup piece: found to be 'EXPIRED'
+backup piece handle=/u01/rman_bkp/c-896617639-20241209-01 RECID=75 STAMP=1187273869
+Crosschecked 6 objects
+
+
+RMAN> delete expired backup;
+
+using channel ORA_DISK_1
+using channel ORA_DISK_2
+
+List of Backup Pieces
+BP Key  BS Key  Pc# Cp# Status      Device Type Piece Name
+------- ------- --- --- ----------- ----------- ----------
+65      65      1   1   EXPIRED     DISK        /u01/rman_bkp/2j3c8n3v_1_1
+66      66      1   1   EXPIRED     DISK        /u01/rman_bkp/2i3c8n3v_1_1
+67      67      1   1   EXPIRED     DISK        /u01/rman_bkp/2k3c8n41_1_1
+68      68      1   1   EXPIRED     DISK        /u01/rman_bkp/2l3c8n41_1_1
+69      69      1   1   EXPIRED     DISK        /u01/rman_bkp/2n3c8n42_1_1
+70      70      1   1   EXPIRED     DISK        /u01/rman_bkp/2m3c8n42_1_1
+71      71      1   1   EXPIRED     DISK        /u01/rman_bkp/2o3c8n43_1_1
+72      72      1   1   EXPIRED     DISK        /u01/rman_bkp/2q3c8n44_1_1
+73      73      1   1   EXPIRED     DISK        /u01/rman_bkp/2p3c8n44_1_1
+74      74      1   1   EXPIRED     DISK        /u01/rman_bkp/2r3c8n4c_1_1
+75      75      1   1   EXPIRED     DISK        /u01/rman_bkp/c-896617639-20241209-01
+
+Do you really want to delete the above objects (enter YES or NO)? yes
+deleted backup piece
+backup piece handle=/u01/rman_bkp/2i3c8n3v_1_1 RECID=66 STAMP=1187273855
+deleted backup piece
+backup piece handle=/u01/rman_bkp/2j3c8n3v_1_1 RECID=65 STAMP=1187273855
+deleted backup piece
+backup piece handle=/u01/rman_bkp/2k3c8n41_1_1 RECID=67 STAMP=1187273857
+deleted backup piece
+backup piece handle=/u01/rman_bkp/2l3c8n41_1_1 RECID=68 STAMP=1187273857
+deleted backup piece
+backup piece handle=/u01/rman_bkp/2n3c8n42_1_1 RECID=69 STAMP=1187273858
+deleted backup piece
+backup piece handle=/u01/rman_bkp/2m3c8n42_1_1 RECID=70 STAMP=1187273858
+deleted backup piece
+backup piece handle=/u01/rman_bkp/2o3c8n43_1_1 RECID=71 STAMP=1187273859
+deleted backup piece
+backup piece handle=/u01/rman_bkp/2q3c8n44_1_1 RECID=72 STAMP=1187273861
+deleted backup piece
+backup piece handle=/u01/rman_bkp/2p3c8n44_1_1 RECID=73 STAMP=1187273861
+deleted backup piece
+backup piece handle=/u01/rman_bkp/2r3c8n4c_1_1 RECID=74 STAMP=1187273868
+Deleted 5 EXPIRED objects
+
+deleted backup piece
+backup piece handle=/u01/rman_bkp/c-896617639-20241209-01 RECID=75 STAMP=1187273869
+Deleted 6 EXPIRED objects
+
+
+RMAN> crosscheck archivelog all;
+
+released channel: ORA_DISK_1
+released channel: ORA_DISK_2
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=83 device type=DISK
+allocated channel: ORA_DISK_2
+channel ORA_DISK_2: SID=67 device type=DISK
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_1_mo67byrd_.arc RECID=2 STAMP=1187040054
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_23_mo61w7mb_.arc RECID=1 STAMP=1187035341
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_3_mo68dgr0_.arc RECID=4 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_2_mo68cydz_.arc RECID=3 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_4_mo68dlmz_.arc RECID=5 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_5_mo68dloz_.arc RECID=6 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_6_mo68dr8x_.arc RECID=7 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_7_mo68drgs_.arc RECID=8 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_8_mo68dvcg_.arc RECID=9 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_9_mo68dvjf_.arc RECID=10 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_10_mo68dyft_.arc RECID=11 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_11_mo68dylj_.arc RECID=12 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_12_mo68f4jk_.arc RECID=13 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_13_mo68f7mw_.arc RECID=14 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_14_mo68f8o1_.arc RECID=15 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_15_mo68fbmo_.arc RECID=16 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_1_mo6cqjop_.arc RECID=17 STAMP=1187044774
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_2_mo6cqkqc_.arc RECID=18 STAMP=1187044774
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_3_mo6cqncy_.arc RECID=19 STAMP=1187044774
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_4_mo6cqnjp_.arc RECID=20 STAMP=1187044775
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_5_mo6cqt8m_.arc RECID=21 STAMP=1187044775
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_6_mo6cqtgc_.arc RECID=22 STAMP=1187044775
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_7_mo6cqxc2_.arc RECID=23 STAMP=1187044775
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_8_mo6cqxhv_.arc RECID=24 STAMP=1187044775
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_9_mo6cr0fq_.arc RECID=25 STAMP=1187044775
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_10_mo6cr0mm_.arc RECID=26 STAMP=1187044775
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_11_mo6cr3gt_.arc RECID=27 STAMP=1187044775
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_2_mo7f06ks_.arc RECID=29 STAMP=1187078622
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_1_mo7djpm9_.arc RECID=28 STAMP=1187078126
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_4_mo7jgff4_.arc RECID=31 STAMP=1187082149
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_3_mo7f15pd_.arc RECID=30 STAMP=1187078653
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_5_mo82hnpr_.arc RECID=32 STAMP=1187100620
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_6_mo83pr61_.arc RECID=33 STAMP=1187106586
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_7_mo83pt3w_.arc RECID=34 STAMP=1187106586
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_8_mo84763h_.arc RECID=35 STAMP=1187106586
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_9_mo84o8hx_.arc RECID=36 STAMP=1187106586
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_10_mo84om9c_.arc RECID=37 STAMP=1187106586
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_11_mo855qto_.arc RECID=38 STAMP=1187106586
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_12_mo88cb19_.arc RECID=49 STAMP=1187106626
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_12_mo85lyhz_.arc RECID=39 STAMP=1187106586
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_13_mo88c9s0_.arc RECID=47 STAMP=1187106625
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_13_mo85v8h7_.arc RECID=40 STAMP=1187106586
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_14_mo88c9w4_.arc RECID=48 STAMP=1187106625
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_1_mo8ooo3d_.arc RECID=50 STAMP=1187120270
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_2_mo8pnvw9_.arc RECID=51 STAMP=1187121267
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_3_mo8pos5l_.arc RECID=52 STAMP=1187121297
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_5_mo8tfoz2_.arc RECID=54 STAMP=1187125134
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_4_mo8pvz69_.arc RECID=53 STAMP=1187121495
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_07/o1_mf_1_6_mo8trr8l_.arc RECID=55 STAMP=1187125667
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_1_mob4owbg_.arc RECID=56 STAMP=1187169342
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_2_mob58p5d_.arc RECID=57 STAMP=1187169342
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_3_mob58rqk_.arc RECID=58 STAMP=1187169342
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_4_mob58vsm_.arc RECID=59 STAMP=1187169342
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_5_mob59ct8_.arc RECID=60 STAMP=1187169342
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_6_mob59f34_.arc RECID=61 STAMP=1187169342
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_7_mob59hht_.arc RECID=62 STAMP=1187169342
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_8_mob5c1od_.arc RECID=63 STAMP=1187169342
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_9_mob5c370_.arc RECID=64 STAMP=1187169342
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_10_mob5c4fh_.arc RECID=65 STAMP=1187169342
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_11_mob5n4wf_.arc RECID=75 STAMP=1187169372
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_11_mob5c4m2_.arc RECID=66 STAMP=1187169342
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_12_mob5n511_.arc RECID=76 STAMP=1187169373
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_12_mob5c8vd_.arc RECID=67 STAMP=1187169342
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_13_mob5n4ox_.arc RECID=74 STAMP=1187169372
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_1_mob5t7nr_.arc RECID=77 STAMP=1187169567
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_2_mobq6j41_.arc RECID=78 STAMP=1187187368
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_3_mobqcyfq_.arc RECID=79 STAMP=1187187542
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_08/o1_mf_1_4_mobqdmps_.arc RECID=80 STAMP=1187187563
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_09/o1_mf_1_5_modlkbcp_.arc RECID=81 STAMP=1187248130
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_09/o1_mf_1_6_modzdm2l_.arc RECID=82 STAMP=1187261292
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_09/o1_mf_1_7_modzzn6l_.arc RECID=83 STAMP=1187261900
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_09/o1_mf_1_8_mof0cgxl_.arc RECID=84 STAMP=1187262278
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_09/o1_mf_1_9_mof0d46x_.arc RECID=85 STAMP=1187262300
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_09/o1_mf_1_10_mofb2rqk_.arc RECID=86 STAMP=1187272244
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_09/o1_mf_1_11_mofco7n2_.arc RECID=87 STAMP=1187273855
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_09/o1_mf_1_12_mofconbs_.arc RECID=88 STAMP=1187273868
+Crosschecked 38 objects
+
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_09/o1_mf_1_13_mofhmstf_.arc RECID=89 STAMP=1187277906
+Crosschecked 39 objects
+
+
+RMAN> delete expired archivelog all;
+
+released channel: ORA_DISK_1
+released channel: ORA_DISK_2
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=83 device type=DISK
+allocated channel: ORA_DISK_2
+channel ORA_DISK_2: SID=67 device type=DISK
+specification does not match any archived log in the repository
+
+RMAN> 
+
+RMAN> 
+
+RMAN> 
+
+RMAN> 
+
+RMAN> list backup;
+
+specification does not match any backup in the repository
+
+RMAN> report obsolete;
+
+RMAN retention policy will be applied to the command
+RMAN retention policy is set to redundancy 4
+no obsolete backups found
+
+RMAN> 
+
+RMAN> 
+
+RMAN> 
+
+RMAN> 
+
+RMAN> 
+
+RMAN> backup database plus archivelog all;
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00558: error encountered while parsing input commands
+RMAN-01009: syntax error: found "all": expecting one of: "auxiliary, channel, delete, diskratio, filesperset, force, format, from, include, keep, maxsetsize, noexclude, nokeep, not, pool, reuse, section, skipoffline, skip readonly, skipinaccessible, tag, to, ;"
+RMAN-01007: at line 1 column 33 file: standard input
+
+RMAN> backup database plus archiveloga ll;
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00558: error encountered while parsing input commands
+RMAN-01009: syntax error: found "identifier": expecting one of: "archivelog"
+RMAN-01008: the bad identifier was: archiveloga
+RMAN-01007: at line 1 column 22 file: standard input
+
+RMAN> backup database plus archivelog all;
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00558: error encountered while parsing input commands
+RMAN-01009: syntax error: found "all": expecting one of: "auxiliary, channel, delete, diskratio, filesperset, force, format, from, include, keep, maxsetsize, noexclude, nokeep, not, pool, reuse, section, skipoffline, skip readonly, skipinaccessible, tag, to, ;"
+RMAN-01007: at line 1 column 33 file: standard input
+
+RMAN> exit     
+
+
+Recovery Manager complete.
+[oracle@oraclept rman_bkp]$ cd
+[oracle@oraclept ~]$ rman target /
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Mon Dec 9 15:43:30 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: PRODDB (DBID=896617639)
+
+RMAN> backup database plus archivelog all;
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00558: error encountered while parsing input commands
+RMAN-01009: syntax error: found "all": expecting one of: "auxiliary, channel, delete, diskratio, filesperset, force, format, from, include, keep, maxsetsize, noexclude, nokeep, not, pool, reuse, section, skipoffline, skip readonly, skipinaccessible, tag, to, ;"
+RMAN-01007: at line 1 column 33 file: standard input
+
+RMAN> backup database plug archivelog;
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00558: error encountered while parsing input commands
+RMAN-01009: syntax error: found ";": expecting one of: "all, from, high, like, low, scn, sequence, time, until"
+RMAN-01007: at line 1 column 32 file: standard input
+
+RMAN>  BACKUP DATABASE PLUS ARCHIVELOG;                   
+
+
+Starting backup at 09-DEC-2024 15:45:26
+current log archived
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=38 device type=DISK
+allocated channel: ORA_DISK_2
+channel ORA_DISK_2: SID=73 device type=DISK
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=1 RECID=56 STAMP=1187169342
+input archived log thread=1 sequence=2 RECID=57 STAMP=1187169342
+input archived log thread=1 sequence=3 RECID=58 STAMP=1187169342
+input archived log thread=1 sequence=4 RECID=59 STAMP=1187169342
+input archived log thread=1 sequence=5 RECID=60 STAMP=1187169342
+input archived log thread=1 sequence=6 RECID=61 STAMP=1187169342
+input archived log thread=1 sequence=7 RECID=62 STAMP=1187169342
+input archived log thread=1 sequence=8 RECID=63 STAMP=1187169342
+input archived log thread=1 sequence=9 RECID=64 STAMP=1187169342
+input archived log thread=1 sequence=10 RECID=65 STAMP=1187169342
+input archived log thread=1 sequence=11 RECID=75 STAMP=1187169372
+input archived log thread=1 sequence=12 RECID=76 STAMP=1187169373
+input archived log thread=1 sequence=13 RECID=74 STAMP=1187169372
+channel ORA_DISK_1: starting piece 1 at 09-DEC-2024 15:45:27
+channel ORA_DISK_2: starting archived log backup set
+channel ORA_DISK_2: specifying archived log(s) in backup set
+input archived log thread=1 sequence=1 RECID=28 STAMP=1187078126
+input archived log thread=1 sequence=2 RECID=29 STAMP=1187078622
+input archived log thread=1 sequence=3 RECID=30 STAMP=1187078653
+input archived log thread=1 sequence=4 RECID=31 STAMP=1187082149
+input archived log thread=1 sequence=5 RECID=32 STAMP=1187100620
+input archived log thread=1 sequence=6 RECID=33 STAMP=1187106586
+input archived log thread=1 sequence=7 RECID=34 STAMP=1187106586
+input archived log thread=1 sequence=8 RECID=35 STAMP=1187106586
+input archived log thread=1 sequence=9 RECID=36 STAMP=1187106586
+input archived log thread=1 sequence=10 RECID=37 STAMP=1187106586
+input archived log thread=1 sequence=11 RECID=38 STAMP=1187106586
+input archived log thread=1 sequence=12 RECID=49 STAMP=1187106626
+input archived log thread=1 sequence=13 RECID=47 STAMP=1187106625
+input archived log thread=1 sequence=14 RECID=48 STAMP=1187106625
+channel ORA_DISK_2: starting piece 1 at 09-DEC-2024 15:45:27
+channel ORA_DISK_1: finished piece 1 at 09-DEC-2024 15:45:28
+piece handle=/u01/rman_bkp/2t3c8s8n_1_1 tag=TAG20241209T154527 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=1 RECID=77 STAMP=1187169567
+input archived log thread=1 sequence=2 RECID=78 STAMP=1187187368
+input archived log thread=1 sequence=3 RECID=79 STAMP=1187187542
+input archived log thread=1 sequence=4 RECID=80 STAMP=1187187563
+input archived log thread=1 sequence=5 RECID=81 STAMP=1187248130
+input archived log thread=1 sequence=6 RECID=82 STAMP=1187261292
+input archived log thread=1 sequence=7 RECID=83 STAMP=1187261900
+input archived log thread=1 sequence=8 RECID=84 STAMP=1187262278
+input archived log thread=1 sequence=9 RECID=85 STAMP=1187262300
+input archived log thread=1 sequence=10 RECID=86 STAMP=1187272244
+input archived log thread=1 sequence=11 RECID=87 STAMP=1187273855
+input archived log thread=1 sequence=12 RECID=88 STAMP=1187273868
+input archived log thread=1 sequence=13 RECID=89 STAMP=1187277906
+input archived log thread=1 sequence=14 RECID=90 STAMP=1187279126
+channel ORA_DISK_1: starting piece 1 at 09-DEC-2024 15:45:28
+channel ORA_DISK_2: finished piece 1 at 09-DEC-2024 15:45:28
+piece handle=/u01/rman_bkp/2u3c8s8n_1_1 tag=TAG20241209T154527 comment=NONE
+channel ORA_DISK_2: backup set complete, elapsed time: 00:00:01
+channel ORA_DISK_2: starting archived log backup set
+channel ORA_DISK_2: specifying archived log(s) in backup set
+input archived log thread=1 sequence=1 RECID=17 STAMP=1187044774
+input archived log thread=1 sequence=2 RECID=18 STAMP=1187044774
+input archived log thread=1 sequence=3 RECID=19 STAMP=1187044774
+input archived log thread=1 sequence=4 RECID=20 STAMP=1187044775
+input archived log thread=1 sequence=5 RECID=21 STAMP=1187044775
+input archived log thread=1 sequence=6 RECID=22 STAMP=1187044775
+input archived log thread=1 sequence=7 RECID=23 STAMP=1187044775
+input archived log thread=1 sequence=8 RECID=24 STAMP=1187044775
+input archived log thread=1 sequence=9 RECID=25 STAMP=1187044775
+input archived log thread=1 sequence=10 RECID=26 STAMP=1187044775
+input archived log thread=1 sequence=11 RECID=27 STAMP=1187044775
+channel ORA_DISK_2: starting piece 1 at 09-DEC-2024 15:45:28
+channel ORA_DISK_1: finished piece 1 at 09-DEC-2024 15:45:29
+piece handle=/u01/rman_bkp/2v3c8s8o_1_1 tag=TAG20241209T154527 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=23 RECID=1 STAMP=1187035341
+channel ORA_DISK_1: starting piece 1 at 09-DEC-2024 15:45:29
+channel ORA_DISK_2: finished piece 1 at 09-DEC-2024 15:45:29
+piece handle=/u01/rman_bkp/303c8s8o_1_1 tag=TAG20241209T154527 comment=NONE
+channel ORA_DISK_2: backup set complete, elapsed time: 00:00:01
+channel ORA_DISK_2: starting archived log backup set
+channel ORA_DISK_2: specifying archived log(s) in backup set
+input archived log thread=1 sequence=1 RECID=50 STAMP=1187120270
+input archived log thread=1 sequence=2 RECID=51 STAMP=1187121267
+input archived log thread=1 sequence=3 RECID=52 STAMP=1187121297
+input archived log thread=1 sequence=4 RECID=53 STAMP=1187121495
+input archived log thread=1 sequence=5 RECID=54 STAMP=1187125134
+input archived log thread=1 sequence=6 RECID=55 STAMP=1187125667
+channel ORA_DISK_2: starting piece 1 at 09-DEC-2024 15:45:29
+channel ORA_DISK_1: finished piece 1 at 09-DEC-2024 15:45:30
+piece handle=/u01/rman_bkp/313c8s8p_1_1 tag=TAG20241209T154527 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=1 RECID=2 STAMP=1187040054
+input archived log thread=1 sequence=2 RECID=3 STAMP=1187041891
+input archived log thread=1 sequence=3 RECID=4 STAMP=1187041891
+input archived log thread=1 sequence=4 RECID=5 STAMP=1187041891
+input archived log thread=1 sequence=5 RECID=6 STAMP=1187041891
+input archived log thread=1 sequence=6 RECID=7 STAMP=1187041891
+input archived log thread=1 sequence=7 RECID=8 STAMP=1187041891
+input archived log thread=1 sequence=8 RECID=9 STAMP=1187041891
+input archived log thread=1 sequence=9 RECID=10 STAMP=1187041891
+input archived log thread=1 sequence=10 RECID=11 STAMP=1187041891
+input archived log thread=1 sequence=11 RECID=12 STAMP=1187041891
+input archived log thread=1 sequence=12 RECID=13 STAMP=1187041891
+input archived log thread=1 sequence=13 RECID=14 STAMP=1187041891
+input archived log thread=1 sequence=14 RECID=15 STAMP=1187041891
+input archived log thread=1 sequence=15 RECID=16 STAMP=1187041891
+channel ORA_DISK_1: starting piece 1 at 09-DEC-2024 15:45:31
+channel ORA_DISK_2: finished piece 1 at 09-DEC-2024 15:45:31
+piece handle=/u01/rman_bkp/323c8s8p_1_1 tag=TAG20241209T154527 comment=NONE
+channel ORA_DISK_2: backup set complete, elapsed time: 00:00:02
+channel ORA_DISK_1: finished piece 1 at 09-DEC-2024 15:45:32
+piece handle=/u01/rman_bkp/333c8s8r_1_1 tag=TAG20241209T154527 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+Finished backup at 09-DEC-2024 15:45:32
+
+Starting backup at 09-DEC-2024 15:45:32
+using channel ORA_DISK_1
+using channel ORA_DISK_2
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00001 name=/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_system_mo8tyd8y_.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_sysaux_mo8tyd92_.dbf
+input datafile file number=00007 name=/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_users_mo8tyd95_.dbf
+input datafile file number=00008 name=/u01/app/oracle/oradata/PRODDB/datafile/hrms_ts_001.dbf
+channel ORA_DISK_1: starting piece 1 at 09-DEC-2024 15:45:32
+channel ORA_DISK_2: starting full datafile backup set
+channel ORA_DISK_2: specifying datafile(s) in backup set
+input datafile file number=00005 name=/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_soetbs_mo8tyd8b_.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/PRODDB/datafile/o1_mf_undotbs1_mo8tyd8j_.dbf
+input datafile file number=00002 name=/u01/app/oracle/datafile_venkyts_001.dbf
+channel ORA_DISK_2: starting piece 1 at 09-DEC-2024 15:45:32
+channel ORA_DISK_1: finished piece 1 at 09-DEC-2024 15:45:39
+piece handle=/u01/rman_bkp/343c8s8s_1_1 tag=TAG20241209T154532 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:07
+channel ORA_DISK_2: finished piece 1 at 09-DEC-2024 15:45:39
+piece handle=/u01/rman_bkp/353c8s8s_1_1 tag=TAG20241209T154532 comment=NONE
+channel ORA_DISK_2: backup set complete, elapsed time: 00:00:07
+Finished backup at 09-DEC-2024 15:45:39
+
+Starting backup at 09-DEC-2024 15:45:39
+current log archived
+using channel ORA_DISK_1
+using channel ORA_DISK_2
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=15 RECID=91 STAMP=1187279139
+channel ORA_DISK_1: starting piece 1 at 09-DEC-2024 15:45:40
+channel ORA_DISK_1: finished piece 1 at 09-DEC-2024 15:45:41
+piece handle=/u01/rman_bkp/363c8s94_1_1 tag=TAG20241209T154539 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+Finished backup at 09-DEC-2024 15:45:41
+
+Starting Control File and SPFILE Autobackup at 09-DEC-2024 15:45:41
+piece handle=/u01/rman_bkp/c-896617639-20241209-02 comment=NONE
+Finished Control File and SPFILE Autobackup at 09-DEC-2024 15:45:42
+
+RMAN> 
+[oracle@oraclept rman_bkp]$ cd
+[oracle@oraclept ~]$ cd /u01/rman_bkp
+[oracle@oraclept rman_bkp]$ ll
+total 0
+[oracle@oraclept rman_bkp]$ ll
+total 2590964
+-rw-r-----. 1 oracle oinstall   76695040 Dec  9 15:45 2t3c8s8n_1_1
+-rw-r-----. 1 oracle oinstall   55749120 Dec  9 15:45 2u3c8s8n_1_1
+-rw-r-----. 1 oracle oinstall   42783232 Dec  9 15:45 2v3c8s8o_1_1
+-rw-r-----. 1 oracle oinstall   41552896 Dec  9 15:45 303c8s8o_1_1
+-rw-r-----. 1 oracle oinstall   33908736 Dec  9 15:45 313c8s8p_1_1
+-rw-r-----. 1 oracle oinstall   14030336 Dec  9 15:45 323c8s8p_1_1
+-rw-r-----. 1 oracle oinstall    8078848 Dec  9 15:45 333c8s8r_1_1
+-rw-r-----. 1 oracle oinstall 1332789248 Dec  9 15:45 343c8s8s_1_1
+-rw-r-----. 1 oracle oinstall 1025032192 Dec  9 15:45 353c8s8s_1_1
+-rw-r-----. 1 oracle oinstall       5120 Dec  9 15:45 363c8s94_1_1
+-rw-r-----. 1 oracle oinstall   11304960 Dec  9 15:45 c-896617639-20241209-02
+-rw-r-----. 1 oracle oinstall   11190272 Dec  9 15:45 snapcf_DB.f
+[oracle@oraclept rman_bkp]$ scp * oracle@192.168.0.127:/u01/rman_bkp
+oracle@192.168.0.127's password: 
+2t3c8s8n_1_1                                                                                                                                                                     100%   73MB  20.4MB/s   00:03    
+2u3c8s8n_1_1                                                                                                                                                                     100%   53MB  20.7MB/s   00:02    
+2v3c8s8o_1_1                                                                                                                                                                     100%   41MB  20.4MB/s   00:02    
+303c8s8o_1_1                                                                                                                                                                     100%   40MB  17.6MB/s   00:02    
+313c8s8p_1_1                                                                                                                                                                     100%   32MB  14.9MB/s   00:02    
+323c8s8p_1_1                                                                                                                                                                     100%   13MB  19.2MB/s   00:00    
+
+
+
+
+
+DEVdb
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+[oracle@oraclept ~]$ cd /u01/rman_bkp
+[oracle@oraclept rman_bkp]$ ll
+total 2580516
+-rw-r-----. 1 oracle oinstall   76695040 Dec  9 14:17 2i3c8n3v_1_1
+-rw-r-----. 1 oracle oinstall   55749120 Dec  9 14:17 2j3c8n3v_1_1
+-rw-r-----. 1 oracle oinstall   41552896 Dec  9 14:17 2k3c8n41_1_1
+-rw-r-----. 1 oracle oinstall   34094592 Dec  9 14:17 2l3c8n41_1_1
+-rw-r-----. 1 oracle oinstall   33908736 Dec  9 14:17 2m3c8n42_1_1
+-rw-r-----. 1 oracle oinstall   14030336 Dec  9 14:17 2n3c8n42_1_1
+-rw-r-----. 1 oracle oinstall    8078848 Dec  9 14:17 2o3c8n43_1_1
+-rw-r-----. 1 oracle oinstall 1330847744 Dec  9 14:17 2p3c8n44_1_1
+-rw-r-----. 1 oracle oinstall 1024966656 Dec  9 14:17 2q3c8n44_1_1
+-rw-r-----. 1 oracle oinstall       5120 Dec  9 14:17 2r3c8n4c_1_1
+-rw-r-----. 1 oracle oinstall   11304960 Dec  9 14:17 c-896617639-20241209-01
+-rw-r-----. 1 oracle oinstall   11190272 Dec  9 14:17 snapcf_DB.f
+[oracle@oraclept rman_bkp]$ rm *
+[oracle@oraclept rman_bkp]$ ll
+total 0
+[oracle@oraclept rman_bkp]$ cd
+[oracle@oraclept ~]$ cat /etc/oratab
+#
+
+
+
+# This file is used by ORACLE utilities.  It is created by root.sh
+# and updated by either Database Configuration Assistant while creating
+# a database or ASM Configuration Assistant while creating ASM instance.
+
+# A colon, ':', is used as the field terminator.  A new line terminates
+# the entry.  Lines beginning with a pound sign, '#', are comments.
+#
+# Entries are of the form:
+#   $ORACLE_SID:$ORACLE_HOME:<N|Y>:
+#
+# The first and second fields are the system identifier and home
+# directory of the database respectively.  The third field indicates
+# to the dbstart utility that the database should , "Y", or should not,
+# "N", be brought up at system boot time.
+#
+# Multiple entries with the same $ORACLE_SID are not allowed.
+#
+#
+proddb:/u01/app/oracle/product/19.0.0.0/dbhome_1:Y
+[oracle@oraclept ~]$ vi /etc/oratab
+
+[oracle@oraclept ~]$ rman target /
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Mon Dec 9 15:23:43 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: PRODDB (DBID=896617639)
+
+RMAN> crosscheck backup;
+
+
+
+
+RMAN> delete expired backup;
+
+
+
+
+RMAN> crosscheck archivelog all;
+
+le name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_4_mo68dlmz_.arc RECID=5 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_5_mo68dloz_.arc RECID=6 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_6_mo68dr8x_.arc RECID=7 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_7_mo68drgs_.arc RECID=8 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_8_mo68dvcg_.arc RECID=9 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_9_mo68dvjf_.arc RECID=10 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_10_mo68dyft_.arc RECID=11 STAMP=1187041891
+validation succeeded for archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/PRODDB/archivelog/2024_12_06/o1_mf_1_11_mo68dylj_.arc RECID=12 STAMP=1187041891
+validation succeeded for archived log
+
+
+
+
+RMAN> delete expired archivelog all;
+
+released channel: ORA_DISK_1
+released channel: ORA_DISK_2
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=117 device type=DISK
+allocated channel: ORA_DISK_2
+channel ORA_DISK_2: SID=118 device type=DISK
+specification does not match any archived log in the repository
+
+RMAN> report obsolete;
+
+RMAN retention policy will be applied to the command
+RMAN retention policy is set to redundancy 4
+no obsolete backups found
+
+RMAN> list backup;
+
+specification does not match any backup in the repository
+
+RMAN> CONFIGURE RETENTION POLICY TO REDUNDANCY 2; # default
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON; # default
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/u01/rman_bkp/%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 2 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE RMAN OUTPUT TO KEEP FOR 7 DAYS; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/rman_bkp/snapcf_DB.f'; # default
+CONFIGURE CHANNEL 1 DEVICE TYPE DISK FORMAT '/u01/rman_bkp/%U';
+CONFIGURE CHANNEL 2 DEVICE TYPE DISK FORMAT '/u01/rman_bkp/%U';
+old RMAN configuration parameters:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 4;
+new RMAN configuration parameters:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 2;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+new RMAN configuration parameters:
+CONFIGURE BACKUP OPTIMIZATION OFF;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE DEFAULT DEVICE TYPE TO DISK;
+new RMAN configuration parameters:
+CONFIGURE DEFAULT DEVICE TYPE TO DISK;
+new RMAN configuration parameters are successfully stored
+released channel: ORA_DISK_1
+released channel: ORA_DISK_2
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+new RMAN configuration parameters:
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/u01/rman_bkp/%F';
+new RMAN configuration parameters:
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/u01/rman_bkp/%F';
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE DEVICE TYPE DISK PARALLELISM 2 BACKUP TYPE TO BACKUPSET;
+new RMAN configuration parameters:
+CONFIGURE DEVICE TYPE DISK PARALLELISM 2 BACKUP TYPE TO BACKUPSET;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1;
+new RMAN configuration parameters:
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1;
+new RMAN configuration parameters:
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE MAXSETSIZE TO UNLIMITED;
+new RMAN configuration parameters:
+CONFIGURE MAXSETSIZE TO UNLIMITED;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE ENCRYPTION FOR DATABASE OFF;
+new RMAN configuration parameters:
+CONFIGURE ENCRYPTION FOR DATABASE OFF;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE ENCRYPTION ALGORITHM 'AES128';
+new RMAN configuration parameters:
+CONFIGURE ENCRYPTION ALGORITHM 'AES128';
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE;
+new RMAN configuration parameters:
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE RMAN OUTPUT TO KEEP FOR 7 DAYS;
+new RMAN configuration parameters:
+CONFIGURE RMAN OUTPUT TO KEEP FOR 7 DAYS;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE;
+new RMAN configuration parameters:
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/rman_bkp/snapcf_DB.f';
+new RMAN configuration parameters:
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/rman_bkp/snapcf_DB.f';
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+old RMAN configuration parameters:
+CONFIGURE CHANNEL 1 DEVICE TYPE DISK FORMAT   '/u01/rman_bkp/%U';
+new RMAN configuration parameters:
+CONFIGURE CHANNEL 1 DEVICE TYPE DISK FORMAT   '/u01/rman_bkp/%U';
+new RMAN configuration parameters are successfully stored
+
+RMAN> exit
+
+old RMAN configuration parameters:
+CONFIGURE CHANNEL 2 DEVICE TYPE DISK FORMAT   '/u01/rman_bkp/%U';
+new RMAN configuration parameters:
+CONFIGURE CHANNEL 2 DEVICE TYPE DISK FORMAT   '/u01/rman_bkp/%U';
+new RMAN configuration parameters are successfully stored
+
+
+Recovery Manager complete.
+[oracle@oraclept ~]$ ifconfig
+enp0s3: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.0.127  netmask 255.255.255.0  broadcast 192.168.0.255
+        inet6 fe80::7c8e:6082:12e7:5902  prefixlen 64  scopeid 0x20<link>
+        ether 08:00:27:f8:e6:df  txqueuelen 1000  (Ethernet)
+        RX packets 8064  bytes 1049198 (1.0 MiB)
+        RX errors 2  dropped 0  overruns 0  frame 0
+        TX packets 2576  bytes 251574 (245.6 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 19  base 0xd020  
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 599  bytes 45520 (44.4 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 599  bytes 45520 (44.4 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+virbr0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 192.168.122.1  netmask 255.255.255.0  broadcast 192.168.122.255
+        ether 52:54:00:07:39:e9  txqueuelen 1000  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+[oracle@oraclept ~]$ 
+[oracle@oraclept ~]$ 
+[oracle@oraclept ~]$ 
+[oracle@oraclept ~]$ cd /u01/rman_bkp
+[oracle@oraclept rman_bkp]$ ll
+total 2590964
+-rw-r-----. 1 oracle oinstall   76695040 Dec  9 15:46 2t3c8s8n_1_1
+-rw-r-----. 1 oracle oinstall   55749120 Dec  9 15:46 2u3c8s8n_1_1
+-rw-r-----. 1 oracle oinstall   42783232 Dec  9 15:46 2v3c8s8o_1_1
+-rw-r-----. 1 oracle oinstall   41552896 Dec  9 15:46 303c8s8o_1_1
+-rw-r-----. 1 oracle oinstall   33908736 Dec  9 15:46 313c8s8p_1_1
+-rw-r-----. 1 oracle oinstall   14030336 Dec  9 15:46 323c8s8p_1_1
+-rw-r-----. 1 oracle oinstall    8078848 Dec  9 15:46 333c8s8r_1_1
+-rw-r-----. 1 oracle oinstall 1332789248 Dec  9 15:48 343c8s8s_1_1
+-rw-r-----. 1 oracle oinstall 1025032192 Dec  9 15:49 353c8s8s_1_1
+-rw-r-----. 1 oracle oinstall       5120 Dec  9 15:49 363c8s94_1_1
+-rw-r-----. 1 oracle oinstall   11304960 Dec  9 15:49 c-896617639-20241209-02
+-rw-r--r--. 1 oracle oinstall       1158 Dec  9 15:37 initproddb.ora
+-rw-r-----. 1 oracle oinstall       1158 Dec  9 15:37 orapwproddb
+-rw-r-----. 1 oracle oinstall   11190272 Dec  9 15:49 snapcf_DB.f
+[oracle@oraclept rman_bkp]$ cd
+[oracle@oraclept ~]$ cd $ORACLE_HOME/dbs
+[oracle@oraclept dbs]$ ll
+total 10376
+-rw-rw----. 1 oracle oinstall     1544 Dec  9 15:11 hc_proddb.dat
+-rwxrwxrwx. 1 oracle oinstall     3079 May 14  2015 init.ora
+-rw-r--r--. 1 oracle oinstall     1158 Jan  1  2024 initproddb.ora
+-rw-r-----. 1 oracle oinstall       24 Dec 26  2023 lkPRODDB
+-rw-r-----. 1 oracle oinstall     1158 Dec  9 11:08 orapwproddb
+-rw-r-----. 1 oracle oinstall 10600448 Dec  6 19:41 snapcf_proddb.f
+-rw-r-----. 1 oracle oinstall     3584 Dec  9 15:11 spfileproddb.ora
+[oracle@oraclept dbs]$ mv initproddb.ora initdevdb.ora
+[oracle@oraclept dbs]$ ll
+total 10376
+-rw-rw----. 1 oracle oinstall     1544 Dec  9 15:11 hc_proddb.dat
+-rw-r--r--. 1 oracle oinstall     1158 Jan  1  2024 initdevdb.ora
+-rwxrwxrwx. 1 oracle oinstall     3079 May 14  2015 init.ora
+-rw-r-----. 1 oracle oinstall       24 Dec 26  2023 lkPRODDB
+-rw-r-----. 1 oracle oinstall     1158 Dec  9 11:08 orapwproddb
+-rw-r-----. 1 oracle oinstall 10600448 Dec  6 19:41 snapcf_proddb.f
+-rw-r-----. 1 oracle oinstall     3584 Dec  9 15:11 spfileproddb.ora
+[oracle@oraclept dbs]$ vi initdevdb.ora
+[oracle@oraclept dbs]$ 
+[oracle@oraclept dbs]$ 
+[oracle@oraclept dbs]$ 
+[oracle@oraclept dbs]$ 
+[oracle@oraclept dbs]$ mv orapwproddb orapwdevdb
+[oracle@oraclept dbs]$ 
+[oracle@oraclept dbs]$ 
+[oracle@oraclept dbs]$ 
+[oracle@oraclept dbs]$ 
+[oracle@oraclept dbs]$ cd
+[oracle@oraclept ~]$ ls -lrtah
+total 324M
+-rw-r--r--.  1 oracle oinstall 323M Feb 16  2019 soe.dmp
+-rw-r--r--.  1 oracle oinstall  231 Nov 22  2019 .bashrc
+-rw-r--r--.  1 oracle oinstall   18 Nov 22  2019 .bash_logout
+drwxr-xr-x.  4 oracle oinstall   39 Dec 26  2023 .mozilla
+drwxr-xr-x.  4 root   root       34 Dec 26  2023 ..
+drwxr-xr-x.  3 oracle oinstall   19 Dec 26  2023 .java
+drwxr-x---.  2 oracle oinstall   40 Dec 26  2023 .oracle_jre_usage
+drwx------.  3 oracle oinstall   25 Dec 26  2023 .dbus
+drwx------.  3 oracle oinstall   19 Dec 26  2023 .local
+-rw-------.  1 oracle oinstall   16 Dec 26  2023 .esd_auth
+drwxr-xr-x.  2 oracle oinstall    6 Dec 26  2023 Templates
+drwxr-xr-x.  2 oracle oinstall    6 Dec 26  2023 Public
+drwxr-xr-x.  2 oracle oinstall    6 Dec 26  2023 Music
+drwxr-xr-x.  2 oracle oinstall    6 Dec 26  2023 Downloads
+drwxr-xr-x.  2 oracle oinstall    6 Dec 26  2023 Documents
+drwxr-xr-x.  2 oracle oinstall    6 Dec 26  2023 Desktop
+drwxr-xr-x.  2 oracle oinstall    6 Dec 26  2023 Videos
+drwxr-xr-x.  2 oracle oinstall    6 Dec 26  2023 Pictures
+drwxr-xr-x. 14 oracle oinstall 4.0K Dec 26  2023 .config
+-rw-r--r--.  1 oracle oinstall   65 Dec 26  2023 flush.sql
+drwxr-----.  3 oracle oinstall   18 Jan  1  2024 oradiag_oracle
+drwxr-xr-x. 15 oracle oinstall 4.0K Jan  2  2024 .cache
+-rw-------.  1 oracle oinstall  116 Jan  3  2024 .Xauthority
+-rw-r--r--.  1 oracle oinstall  701 Jan  6  2024 .bash_profile
+-rw-------.  1 oracle oinstall 2.6K Dec  7 19:53 .bash_history
+drwx------.  2 oracle oinstall   25 Dec  7 21:14 .ssh
+-rw-r-----.  1 oracle oinstall    5 Dec  9 15:12 .vboxclient-clipboard-tty1-control.pid
+-rw-r-----.  1 oracle oinstall    5 Dec  9 15:12 .vboxclient-clipboard-tty1-service.pid
+-rw-r-----.  1 oracle oinstall    5 Dec  9 15:12 .vboxclient-seamless-tty1-control.pid
+-rw-r-----.  1 oracle oinstall    5 Dec  9 15:12 .vboxclient-seamless-tty1-service.pid
+-rw-r-----.  1 oracle oinstall    5 Dec  9 15:12 .vboxclient-draganddrop-tty1-control.pid
+-rw-r-----.  1 oracle oinstall    5 Dec  9 15:12 .vboxclient-vmsvga-session-tty1-control.pid
+-rw-r-----.  1 oracle oinstall    5 Dec  9 15:12 .vboxclient-draganddrop-tty1-service.pid
+-rw-r-----.  1 oracle oinstall    5 Dec  9 15:12 .vboxclient-vmsvga-session-tty1-service.pid
+-rw-------.  1 oracle oinstall 9.4K Dec  9 15:12 .ICEauthority
+-rw-r-----.  1 oracle oinstall    5 Dec  9 15:12 .vboxclient-hostversion-tty1-control.pid
+-rw-------.  1 oracle oinstall 6.9K Dec  9 15:57 .viminfo
+drwx------. 19 oracle oinstall 4.0K Dec  9 15:57 .
+[oracle@oraclept ~]$ vi /etc/oratab
+[oracle@oraclept ~]$ . oraenv
+ORACLE_SID = [proddb] ? devdb
+The Oracle base remains unchanged with value /u01/app/oracle
+[oracle@oraclept ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Dec 9 15:58:59 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> exit
+Disconnected
+[oracle@oraclept ~]$ cd $ORACLE_HOME/dbs
+[oracle@oraclept dbs]$ ll
+total 10376
+-rw-rw----. 1 oracle oinstall     1544 Dec  9 15:11 hc_proddb.dat
+-rw-r--r--. 1 oracle oinstall     1140 Dec  9 15:57 initdevdb.ora
+-rwxrwxrwx. 1 oracle oinstall     3079 May 14  2015 init.ora
+-rw-r-----. 1 oracle oinstall       24 Dec 26  2023 lkPRODDB
+-rw-r-----. 1 oracle oinstall     1158 Dec  9 11:08 orapwdevdb
+-rw-r-----. 1 oracle oinstall 10600448 Dec  6 19:41 snapcf_proddb.f
+-rw-r-----. 1 oracle oinstall     3584 Dec  9 15:11 spfileproddb.ora
+[oracle@oraclept dbs]$ rm spfileproddb.ora 
+[oracle@oraclept dbs]$ ll
+total 10372
+-rw-rw----. 1 oracle oinstall     1544 Dec  9 15:11 hc_proddb.dat
+-rw-r--r--. 1 oracle oinstall     1140 Dec  9 15:57 initdevdb.ora
+-rwxrwxrwx. 1 oracle oinstall     3079 May 14  2015 init.ora
+-rw-r-----. 1 oracle oinstall       24 Dec 26  2023 lkPRODDB
+-rw-r-----. 1 oracle oinstall     1158 Dec  9 11:08 orapwdevdb
+-rw-r-----. 1 oracle oinstall 10600448 Dec  6 19:41 snapcf_proddb.f
+[oracle@oraclept dbs]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Dec 9 15:59:29 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> create spfile from pfile;
+
+File created.
+
+SQL> startup nomount;
+ORA-09925: Unable to create audit trail file
+Linux-x86_64 Error: 2: No such file or directory
+Additional information: 9925
+SQL> exit
+Disconnected
+[oracle@oraclept dbs]$ cd
+[oracle@oraclept ~]$ cd $ORACLE_HOME/dbs
+[oracle@oraclept dbs]$ ll
+total 10380
+-rw-rw----. 1 oracle oinstall     1544 Dec  9 16:00 hc_devdb.dat
+-rw-rw----. 1 oracle oinstall     1544 Dec  9 15:11 hc_proddb.dat
+-rw-r--r--. 1 oracle oinstall     1140 Dec  9 15:57 initdevdb.ora
+-rwxrwxrwx. 1 oracle oinstall     3079 May 14  2015 init.ora
+-rw-r-----. 1 oracle oinstall       24 Dec 26  2023 lkPRODDB
+-rw-r-----. 1 oracle oinstall     1158 Dec  9 11:08 orapwdevdb
+-rw-r-----. 1 oracle oinstall 10600448 Dec  6 19:41 snapcf_proddb.f
+-rw-r-----. 1 oracle oinstall     3584 Dec  9 15:59 spfiledevdb.ora
+[oracle@oraclept dbs]$ cat initdevdb.ora 
+devdb.__data_transfer_cache_size=0
+devdb.__db_cache_size=570425344
+devdb.__inmemory_ext_roarea=0
+devdb.__inmemory_ext_rwarea=0
+devdb.__java_pool_size=0
+devdb.__large_pool_size=16777216
+devdb.__oracle_base='/u01/app/oracle'#ORACLE_BASE set from environment
+devdb.__pga_aggregate_target=805306368
+devdb.__sga_target=2415919104
+devdb.__shared_io_pool_size=117440512
+devdb.__shared_pool_size=503316480
+devdb.__streams_pool_size=33554432
+devdb.__unified_pga_pool_size=0
+*.audit_file_dest='/u01/app/oracle/admin/devdb/adump'
+*.audit_trail='db'
+*.compatible='19.0.0'
+*.control_files='/u01/app/oracle/oradata/DEVDB/controlfile/o1_mf_lrn5lhl8_.ctl','/u01/app/oracle/fast_recovery_area/devDB/controlfile/o1_mf_lrn5lhlr_.ctl'
+*.db_block_size=8192
+*.db_create_file_dest='/u01/app/oracle/oradata'
+*.db_name='devdb'
+*.db_recovery_file_dest='/u01/app/oracle/fast_recovery_area'
+*.db_recovery_file_dest_size=8256m
+*.diagnostic_dest='/u01/app/oracle'
+*.dispatchers='(PROTOCOL=TCP) (SERVICE=devdbXDB)'
+*.open_cursors=300
+*.pga_aggregate_target=767m
+*.processes=320
+*.remote_login_passwordfile='EXCLUSIVE'
+*.sga_target=1258291200
+*.undo_tablespace='UNDOTBS1'
+[oracle@oraclept dbs]$ 
+[oracle@oraclept dbs]$ 
+[oracle@oraclept dbs]$ 
+[oracle@oraclept dbs]$ 
+[oracle@oraclept dbs]$ cd
+[oracle@oraclept ~]$ mkdir -p /u01/app/oracle/admin/devdb/adump
+[oracle@oraclept ~]$ mkdir -p /u01/app/oracle/oradata/DEVDB/controlfile
+[oracle@oraclept ~]$ mkdir -p /u01/app/oracle/fast_recovery_area/devDB/controlfile
+[oracle@oraclept ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Dec 9 16:02:15 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> startup nomount;
+ORACLE instance started.
+
+Total System Global Area 1258290752 bytes
+Fixed Size		    8896064 bytes
+Variable Size		  553648128 bytes
+Database Buffers	  687865856 bytes
+Redo Buffers		    7880704 bytes
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@oraclept ~]$ rman auxiliary /
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Mon Dec 9 16:02:38 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to auxiliary database: DEVDB (not mounted)
+
+RMAN> duplicate database to devdb backup location '/u01/rman_bak' nofilenamecheck;
+
+Starting Duplicate Db at 09-DEC-2024 16:03:04
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of Duplicate Db command at 12/09/2024 16:03:04
+RMAN-05501: aborting duplication of target database
+RMAN-05579: CONTROLFILE backup not found in /u01/rman_bak
+
+RMAN> duplicate database to 'devdb' backup location '/u01/rman_bkp' nofilenamecheck;
+
+Starting Duplicate Db at 09-DEC-2024 16:03:47
+searching for database ID
+found backup of database ID 896617639
+
+contents of Memory Script:
+{
+   sql clone "alter system set  control_files = 
+  ''/u01/app/oracle/oradata/DEVDB/controlfile/o1_mf_lrn5lhl8_.ctl'', ''/u01/app/oracle/fast_recovery_area/devDB/controlfile/o1_mf_lrn5lhlr_.ctl'' comment=
+ ''Set by RMAN'' scope=spfile";
+   sql clone "alter system set  db_name = 
+ ''PRODDB'' comment=
+ ''Modified by RMAN duplicate'' scope=spfile";
+   sql clone "alter system set  db_unique_name = 
+ ''devdb'' comment=
+ ''Modified by RMAN duplicate'' scope=spfile";
+   shutdown clone immediate;
+   startup clone force nomount
+   restore clone primary controlfile from  '/u01/rman_bkp/c-896617639-20241209-02';
+   alter clone database mount;
+}
+executing Memory Script
+
+sql statement: alter system set  control_files =   ''/u01/app/oracle/oradata/DEVDB/controlfile/o1_mf_lrn5lhl8_.ctl'', ''/u01/app/oracle/fast_recovery_area/devDB/controlfile/o1_mf_lrn5lhlr_.ctl'' comment= ''Set by RMAN'' scope=spfile
+
+sql statement: alter system set  db_name =  ''PRODDB'' comment= ''Modified by RMAN duplicate'' scope=spfile
+
+sql statement: alter system set  db_unique_name =  ''devdb'' comment= ''Modified by RMAN duplicate'' scope=spfile
+
+Oracle instance shut down
+
+Oracle instance started
+
+Total System Global Area    1258290752 bytes
+
+Fixed Size                     8896064 bytes
+Variable Size                553648128 bytes
+Database Buffers             687865856 bytes
+Redo Buffers                   7880704 bytes
+
+Starting restore at 09-DEC-2024 16:04:22
+allocated channel: ORA_AUX_DISK_1
+channel ORA_AUX_DISK_1: SID=35 device type=DISK
+
+channel ORA_AUX_DISK_1: restoring control file
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:01
+output file name=/u01/app/oracle/oradata/DEVDB/controlfile/o1_mf_lrn5lhl8_.ctl
+output file name=/u01/app/oracle/fast_recovery_area/devDB/controlfile/o1_mf_lrn5lhlr_.ctl
+Finished restore at 09-DEC-2024 16:04:24
+
+database mounted
+released channel: ORA_AUX_DISK_1
+allocated channel: ORA_AUX_DISK_1
+channel ORA_AUX_DISK_1: SID=35 device type=DISK
+allocated channel: ORA_AUX_DISK_2
+channel ORA_AUX_DISK_2: SID=36 device type=DISK
+duplicating Online logs to Oracle Managed File (OMF) location
+duplicating Datafiles to Oracle Managed File (OMF) location
+datafile 8 not processed because file is offline
+
+contents of Memory Script:
+{
+   set until scn  6222578;
+   set newname for clone datafile  1 to new;
+   set newname for clone datafile  2 to new;
+   set newname for clone datafile  3 to new;
+   set newname for clone datafile  4 to new;
+   set newname for clone datafile  5 to new;
+   set newname for clone datafile  7 to new;
+   restore
+   clone database
+   skip forever tablespace  "HRMS_TS"   ;
+}
+executing Memory Script
+
+executing command: SET until clause
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+Starting restore at 09-DEC-2024 16:04:29
+using channel ORA_AUX_DISK_1
+using channel ORA_AUX_DISK_2
+
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00001 to /u01/app/oracle/oradata/DEVDB/datafile/o1_mf_system_%u_.dbf
+channel ORA_AUX_DISK_1: restoring datafile 00003 to /u01/app/oracle/oradata/DEVDB/datafile/o1_mf_sysaux_%u_.dbf
+channel ORA_AUX_DISK_1: restoring datafile 00007 to /u01/app/oracle/oradata/DEVDB/datafile/o1_mf_users_%u_.dbf
+channel ORA_AUX_DISK_1: reading from backup piece /u01/rman_bkp/343c8s8s_1_1
+channel ORA_AUX_DISK_2: starting datafile backup set restore
+channel ORA_AUX_DISK_2: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_2: restoring datafile 00002 to /u01/app/oracle/oradata/DEVDB/datafile/o1_mf_venkyts_%u_.dbf
+channel ORA_AUX_DISK_2: restoring datafile 00004 to /u01/app/oracle/oradata/DEVDB/datafile/o1_mf_undotbs1_%u_.dbf
+channel ORA_AUX_DISK_2: restoring datafile 00005 to /u01/app/oracle/oradata/DEVDB/datafile/o1_mf_soetbs_%u_.dbf
+channel ORA_AUX_DISK_2: reading from backup piece /u01/rman_bkp/353c8s8s_1_1
+channel ORA_AUX_DISK_1: piece handle=/u01/rman_bkp/343c8s8s_1_1 tag=TAG20241209T154532
+channel ORA_AUX_DISK_1: restored backup piece 1
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:15
+channel ORA_AUX_DISK_2: piece handle=/u01/rman_bkp/353c8s8s_1_1 tag=TAG20241209T154532
+channel ORA_AUX_DISK_2: restored backup piece 1
+channel ORA_AUX_DISK_2: restore complete, elapsed time: 00:00:15
+Finished restore at 09-DEC-2024 16:04:45
+
+contents of Memory Script:
+{
+   switch clone datafile all;
+}
+executing Memory Script
+
+datafile 1 switched to datafile copy
+input datafile copy RECID=8 STAMP=1187280285 file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_system_mofkxp7m_.dbf
+datafile 2 switched to datafile copy
+input datafile copy RECID=9 STAMP=1187280285 file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_venkyts_mofkxpbv_.dbf
+datafile 3 switched to datafile copy
+input datafile copy RECID=10 STAMP=1187280285 file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_sysaux_mofkxp87_.dbf
+datafile 4 switched to datafile copy
+input datafile copy RECID=11 STAMP=1187280285 file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_undotbs1_mofkxpb9_.dbf
+datafile 5 switched to datafile copy
+input datafile copy RECID=12 STAMP=1187280285 file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_soetbs_mofkxp8t_.dbf
+datafile 7 switched to datafile copy
+input datafile copy RECID=13 STAMP=1187280285 file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_users_mofkxp92_.dbf
+
+contents of Memory Script:
+{
+   set until scn  6222578;
+   recover
+   clone database
+   skip forever tablespace  "HRMS_TS"    delete archivelog
+   ;
+}
+executing Memory Script
+
+executing command: SET until clause
+
+Starting recover at 09-DEC-2024 16:04:46
+using channel ORA_AUX_DISK_1
+using channel ORA_AUX_DISK_2
+
+Executing: alter database datafile 8 offline drop
+starting media recovery
+
+channel ORA_AUX_DISK_1: starting archived log restore to default destination
+channel ORA_AUX_DISK_1: restoring archived log
+archived log thread=1 sequence=15
+channel ORA_AUX_DISK_1: reading from backup piece /u01/rman_bkp/363c8s94_1_1
+channel ORA_AUX_DISK_1: piece handle=/u01/rman_bkp/363c8s94_1_1 tag=TAG20241209T154539
+channel ORA_AUX_DISK_1: restored backup piece 1
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:01
+archived log file name=/u01/app/oracle/fast_recovery_area/DEVDB/archivelog/2024_12_09/o1_mf_1_15_mofky6y4_.arc thread=1 sequence=15
+channel clone_default: deleting archived log(s)
+archived log file name=/u01/app/oracle/fast_recovery_area/DEVDB/archivelog/2024_12_09/o1_mf_1_15_mofky6y4_.arc RECID=1 STAMP=1187280286
+media recovery complete, elapsed time: 00:00:00
+Finished recover at 09-DEC-2024 16:04:48
+Oracle instance started
+
+Total System Global Area    1258290752 bytes
+
+Fixed Size                     8896064 bytes
+Variable Size                553648128 bytes
+Database Buffers             687865856 bytes
+Redo Buffers                   7880704 bytes
+
+contents of Memory Script:
+{
+   sql clone "alter system set  db_name = 
+ ''DEVDB'' comment=
+ ''Reset to original value by RMAN'' scope=spfile";
+   sql clone "alter system reset  db_unique_name scope=spfile";
+}
+executing Memory Script
+
+sql statement: alter system set  db_name =  ''DEVDB'' comment= ''Reset to original value by RMAN'' scope=spfile
+
+sql statement: alter system reset  db_unique_name scope=spfile
+Oracle instance started
+
+Total System Global Area    1258290752 bytes
+
+Fixed Size                     8896064 bytes
+Variable Size                553648128 bytes
+Database Buffers             687865856 bytes
+Redo Buffers                   7880704 bytes
+sql statement: CREATE CONTROLFILE REUSE SET DATABASE "DEVDB" RESETLOGS ARCHIVELOG 
+  MAXLOGFILES     16
+  MAXLOGMEMBERS      3
+  MAXDATAFILES      100
+  MAXINSTANCES     8
+  MAXLOGHISTORY      292
+ LOGFILE
+  GROUP     1  SIZE 200 M ,
+  GROUP     2  SIZE 200 M ,
+  GROUP     3  SIZE 200 M 
+ DATAFILE
+  '/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_system_mofkxp7m_.dbf'
+ CHARACTER SET AL32UTF8
+
+
+contents of Memory Script:
+{
+   set newname for clone tempfile  1 to new;
+   switch clone tempfile all;
+   catalog clone datafilecopy  "/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_venkyts_mofkxpbv_.dbf", 
+ "/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_sysaux_mofkxp87_.dbf", 
+ "/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_undotbs1_mofkxpb9_.dbf", 
+ "/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_soetbs_mofkxp8t_.dbf", 
+ "/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_users_mofkxp92_.dbf";
+   switch clone datafile all;
+}
+executing Memory Script
+
+executing command: SET NEWNAME
+
+renamed tempfile 1 to /u01/app/oracle/oradata/DEVDB/datafile/o1_mf_temp_%u_.tmp in control file
+
+cataloged datafile copy
+datafile copy file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_venkyts_mofkxpbv_.dbf RECID=1 STAMP=1187280319
+cataloged datafile copy
+datafile copy file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_sysaux_mofkxp87_.dbf RECID=2 STAMP=1187280319
+cataloged datafile copy
+datafile copy file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_undotbs1_mofkxpb9_.dbf RECID=3 STAMP=1187280319
+cataloged datafile copy
+datafile copy file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_soetbs_mofkxp8t_.dbf RECID=4 STAMP=1187280319
+cataloged datafile copy
+datafile copy file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_users_mofkxp92_.dbf RECID=5 STAMP=1187280319
+
+datafile 2 switched to datafile copy
+input datafile copy RECID=1 STAMP=1187280319 file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_venkyts_mofkxpbv_.dbf
+datafile 3 switched to datafile copy
+input datafile copy RECID=2 STAMP=1187280319 file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_sysaux_mofkxp87_.dbf
+datafile 4 switched to datafile copy
+input datafile copy RECID=3 STAMP=1187280319 file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_undotbs1_mofkxpb9_.dbf
+datafile 5 switched to datafile copy
+input datafile copy RECID=4 STAMP=1187280319 file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_soetbs_mofkxp8t_.dbf
+datafile 7 switched to datafile copy
+input datafile copy RECID=5 STAMP=1187280319 file name=/u01/app/oracle/oradata/DEVDB/datafile/o1_mf_users_mofkxp92_.dbf
+
+contents of Memory Script:
+{
+   Alter clone database open resetlogs;
+}
+executing Memory Script
+
+database opened
+Dropping offline and skipped tablespaces
+Executing: drop tablespace "HRMS_TS" including contents cascade constraints
+Finished Duplicate Db at 09-DEC-2024 16:05:35
+
+RMAN> exit
+
+
+Recovery Manager complete.
+[oracle@oraclept ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Dec 9 16:05:50 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> select name, open_mode from v$database;
+
+NAME	  OPEN_MODE
+--------- --------------------
+DEVDB	  READ WRITE
+
+SQL> show con_name
+
+CON_NAME
+------------------------------
+DEVDB
+SQL> desc dba_tablespaces
+ Name					   Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ TABLESPACE_NAME			   NOT NULL VARCHAR2(30)
+ BLOCK_SIZE				   NOT NULL NUMBER
+ INITIAL_EXTENT 				    NUMBER
+ NEXT_EXTENT					    NUMBER
+ MIN_EXTENTS				   NOT NULL NUMBER
+ MAX_EXTENTS					    NUMBER
+ MAX_SIZE					    NUMBER
+ PCT_INCREASE					    NUMBER
+ MIN_EXTLEN					    NUMBER
+ STATUS 					    VARCHAR2(9)
+ CONTENTS					    VARCHAR2(21)
+ LOGGING					    VARCHAR2(9)
+ FORCE_LOGGING					    VARCHAR2(3)
+ EXTENT_MANAGEMENT				    VARCHAR2(10)
+ ALLOCATION_TYPE				    VARCHAR2(9)
+ PLUGGED_IN					    VARCHAR2(3)
+ SEGMENT_SPACE_MANAGEMENT			    VARCHAR2(6)
+ DEF_TAB_COMPRESSION				    VARCHAR2(8)
+ RETENTION					    VARCHAR2(11)
+ BIGFILE					    VARCHAR2(3)
+ PREDICATE_EVALUATION				    VARCHAR2(7)
+ ENCRYPTED					    VARCHAR2(3)
+ COMPRESS_FOR					    VARCHAR2(30)
+ DEF_INMEMORY					    VARCHAR2(8)
+ DEF_INMEMORY_PRIORITY				    VARCHAR2(8)
+ DEF_INMEMORY_DISTRIBUTE			    VARCHAR2(15)
+ DEF_INMEMORY_COMPRESSION			    VARCHAR2(17)
+ DEF_INMEMORY_DUPLICATE 			    VARCHAR2(13)
+ SHARED 					    VARCHAR2(13)
+ DEF_INDEX_COMPRESSION				    VARCHAR2(8)
+ INDEX_COMPRESS_FOR				    VARCHAR2(13)
+ DEF_CELLMEMORY 				    VARCHAR2(14)
+ DEF_INMEMORY_SERVICE				    VARCHAR2(12)
+ DEF_INMEMORY_SERVICE_NAME			    VARCHAR2(1000)
+ LOST_WRITE_PROTECT				    VARCHAR2(7)
+ CHUNK_TABLESPACE				    VARCHAR2(1)
+
+SQL> select TABLESPACE_NAME,status from dba_tablespaces where tablespace='HRMS_TS';
+select TABLESPACE_NAME,status from dba_tablespaces where tablespace='HRMS_TS'
+                                                         *
+ERROR at line 1:
+ORA-00904: "TABLESPACE": invalid identifier
+
+
+SQL> select tablespace_name, status from dba_tablespaces where tablespace_name='HRMS_TS';
+
+no rows selected
+
+SQL> select tablespace_name, status from dba_tablespaces;
+
+TABLESPACE_NAME 	       STATUS
+------------------------------ ---------
+SYSTEM			       ONLINE
+SYSAUX			       ONLINE
+UNDOTBS1		       ONLINE
+TEMP			       ONLINE
+USERS			       ONLINE
+SOETBS			       ONLINE
+VENKYTS 		       ONLINE
+
+7 rows selected.
+
+SQL> select tablespace_name, status from dba_tablespaces where tablespace_name='VENKYTS';
+
+TABLESPACE_NAME 	       STATUS
+------------------------------ ---------
+VENKYTS 		       ONLINE
+
+SQL> select tablespace_name, status from dba_tablespaces where tablespace_name=IN('VENKYTS', 'SOETBS');
+select tablespace_name, status from dba_tablespaces where tablespace_name=IN('VENKYTS', 'SOETBS')
+                                                                          *
+ERROR at line 1:
+ORA-00936: missing expression
+
+
+SQL> select tablespace_name, status from dba_tablespaces where tablespace_name='SOETBS';
+
+TABLESPACE_NAME 	       STATUS
+------------------------------ ---------
+SOETBS			       ONLINE
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@oraclept ~]$ 
+[oracle@oraclept ~]$ 
+[oracle@oraclept ~]$ 
+[oracle@oraclept ~]$ 
+[oracle@oraclept ~]$ 
+[oracle@oraclept ~]$ 
