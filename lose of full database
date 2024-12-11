@@ -1,3 +1,12 @@
+full backup database
+---------------------------------
+sql>startup mount;
+sql>alter database archivelog;
+sql>alter database open;
+sql>archive log list;
+sql> exit
+rman>rman target /
+rman>backup database;
 
 
 If full database lost
