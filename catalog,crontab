@@ -1,0 +1,81 @@
+catalog
++++++++++++++++++++++++++++++++++++++++
+sql>select username from dba_users where oracle_maintained ='N';
+
+create new database for catalog.
+listener and tnsconfig in both meachines proddb,prodb
+networking between db server and catdb.
+
+
+catdb:
+>create user siva identified by siva account unlock;
+>grant create session,connect,resource to siva;
+>grant recovery_catalog_owner to siva;
+>alter user siva quota unlimited on users;
+
+
+>rman
+>connect catalog siva/siva@TO_PRODDB
+create catalog;
+
+RMAN>rman catalog rman_user/rman_user@to_proddb target sys/oracle@to_pro
+
+
+
+RMAN> connect catalog rman_user/rman_user@to_proddb
+
+connected to recovery catalog database
+
+RMAN> connect target sys/oracle@to_pro                      
+
+connected to target database: PRODDB (DBID=926725552)
+
+RMAN> register database;
+
+database registered in recovery catalog
+starting full resync of recovery catalog
+full resync complete
+
+
+
+
+crontab
+++++++++++++++++++++++++++++++++++
+>sqlplus / as sydba
+>startup;
+
+$touch siva.sh                (create any where these in for easy cd $ORACLE_HOME/u01)
+#!/bin/bash
+
+
+export ORACLE_SID=proddb
+export ORACLE_HOME=/u01/app/oracle/product/19.0.0.0/dbhome_1
+export DATE=$(date +%y-%m-%d_%H%M%S)
+export PATH=$PATH:$ORACLE_HOME/bin
+
+rman target / log=/u01/rman_bkp/RMAN_${DATE}.log << EOF
+run
+{
+crosscheck backup;
+}
+EOF
+
+$ls -lrtah
+$crontab -e
+*/3 * * * * /u01/app/oracle/product/19.0.0.0/dbhome_1/siva.sh (inside the crontab)
+#*/3 * * * * /u01/app/oracle/product/19.0.0.0/dbhome_1/siva.sh (# is for mute)
+$crontab -l (for list)
+$cd $ORACLE_HOME/u01/rman_bkp
+$ls -lrtah
+
+
+
+
+
+
+
+
+
+
+
+
