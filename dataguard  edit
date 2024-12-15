@@ -1,0 +1,6 @@
+describe v$logfile
+select member,group# from v$logfile;
+
+alter system set db_unique_name='sivadb' scope=spfile;
+
+show parameter db_unique_name
