@@ -1,5 +1,38 @@
+primary
+================================================================
+hostnamectl set-hostname nagaraju.com
+export ORACLE_HOME=/u01/app/oracle/product/19.0.0.0/dbhome_1
+export PATH=$ORACLE_HOME/bin:$PATH
+
+env |grep ORA
+
+vi .bash_profile
+
+vi /etc/oratab
+
+source .bash_profile
+
+. orenv
+
+sqlplus / as sysdba
+
+archive log list( keep in enable)
+
+shut immediate;
+
+startup mount;
+
+alter database archivelog;
+
+alter database open
+
+archive log list
 
 sql>ALTER DATABASE FORCE LOGGING;
+
+select flshback_on from v$database;
+
+alter database flash on;
 
 set lines 180
 col MEMBER for a80
@@ -7,33 +40,71 @@ select b.thread#, a.group#, a.member, b.bytes/1024/1024 MB FROM v$logfile a, v$l
 
 /u01/app/oracle/oradata/PRODDB/onlinelog/
 
-ALTER DATABASE ADD STANDBY LOGFILE GROUP 8 ('/u01/app/oracle/oradata/PRODDB/onlinelog/redo08.log') SIZE 200M;
-ALTER DATABASE ADD STANDBY LOGFILE GROUP 9 ('/u01/app/oracle/oradata/PRODDB/onlinelog/redo09.log') SIZE 200M;
-ALTER DATABASE ADD STANDBY LOGFILE GROUP 10 ('/u01/app/oracle/oradata/PRODDB/onlinelog/redo10.log') SIZE 200M;
+ALTER DATABASE ADD STANDBY LOGFILE GROUP 8 ('/u01/app/oracle/oradata/BANK/onlinelog/redo08.log') SIZE 200M;
+ALTER DATABASE ADD STANDBY LOGFILE GROUP 9 ('/u01/app/oracle/oradata/BANK/onlinelog/redo09.log') SIZE 200M;
+ALTER DATABASE ADD STANDBY LOGFILE GROUP 10 ('/u01/app/oracle/oradata/BANK/onlinelog/redo10.log') SIZE 200M;
 
 describe v$logfile
 
 select member,group# from v$logfile;
 
-alter system set db_unique_name='sivadb' scope=spfile;
+alter system set db_unique_name='banka' scope=spfile;
+
+show parameter db_name
+
+shut immediate;
+
+startup;
 
 show parameter db_unique_name
 
-ALTER SYSTEM SET LOG_ARCHIVE_CONFIG='DG_CONFIG=(proddb,proddbs)' scope=both;
+SID_LIST_LISTENER =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = bank)
+      (ORACLE_HOME = /u01/app/oracle/product/19.0.0.0/dbhome_1)
+      (SID_NAME = bank)
+    )
+  )
 
-ALTER SYSTEM SET LOG_ARCHIVE_DEST_2='SERVICE=to_proddbs LGWR ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME=proddbs' scope=both;
+LISTENER =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.248)(PORT = 1521))
+  )
+
+T0_BANK =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.248)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = bank)
+    )
+  )
+
+
+ALTER SYSTEM SET LOG_ARCHIVE_CONFIG='DG_CONFIG=(bank,bankb)' scope=both;
+
+ALTER SYSTEM SET LOG_ARCHIVE_DEST_2='SERVICE=to_bankb LGWR ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME=bankb' scope=both;
 
 --ALTER SYSTEM SET LOG_ARCHIVE_DEST_STATE_1=ENABLE scope=both;
 
 ALTER SYSTEM SET LOG_ARCHIVE_DEST_STATE_2=ENABLE scope=both;
 
-ALTER SYSTEM SET fal_server=to_proddbs scope=both;
+ALTER SYSTEM SET fal_server=to_bankb scope=both;
 
 ALTER SYSTEM SET STANDBY_FILE_MANAGEMENT=AUTO;
 
 create pfile from spfile;
 alter pluggable database all open;
 exit;
+
+scp initproddb.ora orapwproddb oracle@192.168.0.139:/u01/app/oracle/product/19.0.0.0/dbhome_1/dbs
+
+
+
+
+
 
 mkdir -p /u01/rman_bkp/
 
@@ -74,45 +145,48 @@ scp -r /u01/rman_bkp/ oracle@oracles.com:/u01/
 
 
 standby
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 cd $ORACLE_HOME
 cd dbs
 mv orapwproddb orapwproddbs
 mv initproddb.ora initproddbs.ora
+
+vi initproddbs
 
 
 edit pfile
 
 after modification your pfile will look like below.
 [oracle@oradbsrv2 dbs]$ cat initproddbs.ora
-proddbs.__data_transfer_cache_size=0
-proddbs.__db_cache_size=1761607680
-proddbs.__inmemory_ext_roarea=0
-proddbs.__inmemory_ext_rwarea=0
-proddbs.__java_pool_size=0
-proddbs.__large_pool_size=16777216
-proddbs.__oracle_base='/u01/app/oracle'#ORACLE_BASE set from environment
-proddbs.__pga_aggregate_target=805306368
-proddbs.__sga_target=2415919104
-proddbs.__shared_io_pool_size=117440512
-proddbs.__shared_pool_size=503316480
-proddbs.__streams_pool_size=0
-proddbs.__unified_pga_pool_size=0
-*.audit_file_dest='/u01/app/oracle/admin/proddb/adump'
+bankb.__data_transfer_cache_size=0
+bankb.__db_cache_size=1761607680
+bankb.__inmemory_ext_roarea=0
+bankb.__inmemory_ext_rwarea=0
+bankb.__java_pool_size=0
+bankb.__large_pool_size=16777216
+bankb.__oracle_base='/u01/app/oracle'#ORACLE_BASE set from environment
+bankb.__pga_aggregate_target=805306368
+bankb.__sga_target=2415919104
+bankb.__shared_io_pool_size=117440512
+bankb.__shared_pool_size=503316480
+bankb.__streams_pool_size=0
+bankb.__unified_pga_pool_size=0
+*.audit_file_dest='/u01/app/oracle/admin/bankb/adump'
 *.audit_trail='db'
 *.compatible='19.0.0'
-*.control_files='/u01/app/oracle/oradata/PRODDB/controlfile/o1_mf_lzt01bvo_.ctl','/u01/app/oracle/fast_recovery_area/PRODDB/controlfile/o1_mf_lzt01bwt_.ctl'
+*.control_files='/u01/app/oracle/oradata/BANK/controlfile/o1_mf_lzt01bvo_.ctl','/u01/app/oracle/fast_recovery_area/BANK/controlfile/o1_mf_lzt01bwt_.ctl'
 *.db_block_size=8192
 *.db_create_file_dest='/u01/app/oracle/oradata'
-*.db_name='proddb'
+*.db_name='bank'
 *.db_recovery_file_dest='/u01/app/oracle/fast_recovery_area'
 *.db_recovery_file_dest_size=12732m
-*.db_unique_name='proddbs'
+*.db_unique_name='bankb'
 *.diagnostic_dest='/u01/app/oracle'
-*.dispatchers='(PROTOCOL=TCP) (SERVICE=proddbsXDB)'
+*.dispatchers='(PROTOCOL=TCP) (SERVICE=bankbXDB)'
 *.enable_pluggable_database=true
-*.fal_server='PRODDB'
-*.log_archive_config='DG_CONFIG=(proddb,proddbs)'
-*.log_archive_dest_2='SERVICE=to_proddb LGWR ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME=proddb'
+*.fal_server='bank'
+*.log_archive_config='DG_CONFIG=(bank,bankb)'
+*.log_archive_dest_2='SERVICE=to_proddb LGWR ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME=bankb'
 *.open_cursors=300
 *.pga_aggregate_target=767m
 *.processes=320
@@ -123,15 +197,70 @@ proddbs.__unified_pga_pool_size=0
 
 
 
-mkdir -p /u01/app/oracle/admin/proddb/adump /u01/app/oracle/oradata/PRODDB/controlfile/ /u01/app/oracle/fast_recovery_area/PRODDB/controlfile/ /u01/app/oracle/oradata /u01/app/oracle/fast_recovery_area
+mkdir -p /u01/app/oracle/admin/bankb/adump /u01/app/oracle/oradata/PRODDB/controlfile/ /u01/app/oracle/fast_recovery_area/PRODDB/controlfile/ /u01/app/oracle/oradata /u01/app/oracle/fast_recovery_area
 
 
-NOTE : make sure your environment variable ORACLE_SID is set to proddbs
+NOTE : make sure your environment variable ORACLE_SID is set to bankb
+
+rman target /
+
+CONFIGURE RETENTION POLICY TO REDUNDANCY 2; # default
+CONFIGURE BACKUP OPTIMIZATION ON; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON; # default
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/u01/rman_bkp/%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 2 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE RMAN OUTPUT TO KEEP FOR 7 DAYS; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/rman_bkp/snapcf_DB.f'; # default
+CONFIGURE CHANNEL 1 DEVICE TYPE DISK FORMAT '/u01/rman_bkp/%U';
+CONFIGURE CHANNEL 2 DEVICE TYPE DISK FORMAT '/u01/rman_bkp/%U';
+
+
 
 sqlplus / as sysdba
 create spfile from pfile;
 startup nomount;
 exit;
+
+su - root
+
+df -h
+
+mount -t tmpfs shmfs -o size=4096M /dev/shm
+
+sqlplus sys/oracle@to_bank as sysdba
+
+rman target sys/oracle@to_bank auxiliary sys/oracle@to_bankb
+
+orapwd file=$ORACLE_HOME/dbs/orapwbank password=Dba_2024 entries=10 force=y (password changing sys)
+
+duplicate target database for standby from active database;
+
+run {
+allocate auxiliary channel t1 type disk;
+allocate channel c1 type disk;
+duplicate target database for standby from active database nofilenamecheck;
+}
+
+
+not working
+backup script rman after
+ 
+backup database plus archivelog
+ 
+[oracle@oraclept rman_bkp]$ scp * oracle@192.168.0.249:/u01/rman_bkp
+
+
+
+
+
 
 
 edit listener file with global database name as proddbs and oracle_sid as proddbs and ip as standby server ip.
