@@ -241,7 +241,7 @@ rman target sys/oracle@to_bank auxiliary sys/oracle@to_bankb
 
 orapwd file=$ORACLE_HOME/dbs/orapwbank password=Dba_2024 entries=10 force=y (password changing sys)
 
-duplicate target database for standby from active database;
+rman> duplicate target database for standby from active database;
 
 run {
 allocate auxiliary channel t1 type disk;
@@ -292,9 +292,17 @@ ALTER DATABASE RECOVER MANAGED STANDBY DATABASE disconnect from session;
 
 
 
-primary
+primary sqlplus / as sysdba
 
-alter system set log_archive_dest_state_2=DEFER scope=both sid='*';
+alter system set log_archive_dest_state_2=DEFER scope=both sid='*';(stopped in standby 78 only show 54)
+archive log list; (ex:54)
+alter system switch logfile;
+/
+/
+archive log list; (ex:78)
+
+
+
 alter system set log_archive_dest_state_2=enable scope=both sid='*';
 
 
@@ -379,3 +387,15 @@ select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,S
 
 set lines 300 pages 300;
 SELECT sequence#, FIRST_CHANGE#,NEXT_CHANGE# FROM v$archived_log ORDER BY sequence#;
+
+
+oracle os level check both
+---------------------------
+$cd /u01/app/oracle/fast_recovery_area/BANKB/archivelog/
+$ll
+$2024_12_21
+$ll  (to all are same in primary and standby)
+
+
+set lines 300 pages 300;
+SELECT sequence#, first_time, next_time, applied FROM v$archived_log ORDER BY sequence#;
