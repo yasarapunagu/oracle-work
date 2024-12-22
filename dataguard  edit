@@ -241,7 +241,7 @@ rman target sys/oracle@to_bank auxiliary sys/oracle@to_bankb
 
 orapwd file=$ORACLE_HOME/dbs/orapwbank password=Dba_2024 entries=10 force=y (password changing sys)
 
-rman> duplicate target database for standby from active database;
+rman> duplicate target database for standby from active database nofilenamecheck;
 
 run {
 allocate auxiliary channel t1 type disk;
