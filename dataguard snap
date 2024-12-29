@@ -1,0 +1,1163 @@
+convert stand by to snapshot and viceversa
+
+SQL@STANDBY> 
+select open_mode,database_role from v$database;
+ 
+set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;
+
+SYS@STANDBY> 
+alter database recover managed standby database cancel;
+ 
+set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;
+
+SYS@STANDBY> 
+shut immediate
+
+SYS@STANDBY> 
+startup mount;
+
+SYS@TESTER1 SQL> 
+select flashback_on from v$database;
+alter database flashback on;
+
+select GUARANTEE_FLASHBACK_DATABASE,RESTORE_POINT_TIME,name from v$restore_point;
+
+ 
+set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;
+
+SYS@TESTER1 SQL> 
+select status from v$instance;
+
+SYS@TESTER1 SQL> 
+alter database convert to snapshot standby;
+
+ 
+set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;
+
+SYS@TESTER1 SQL> 
+alter database open;
+
+ 
+set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;
+
+SYS@TESTER1 SQL> 
+select open_mode,database_role from v$database;
+
+
+
+SQL> 
+select NAME,GUARANTEE_FLASHBACK_DATABASE from v$restore_point;
+
+
+
+convert it again to physical standby again.
+
+shut immediate;
+
+startup mount;
+
+alter database convert to physical standby;
+
+select status from v$instance;
+
+ 
+SYS@TESTER1 
+SQL>alter database recover managed standby database disconnect from session;
+ 
+ 
+set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+practice
+===========
+
+
+[oracle@siva admin]$ rman target sys/Dba_2024@to_bank auxiliary sys/Dba_2024@to_bankb
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Thu Dec 19 16:36:20 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: BANK (DBID=2769430484)
+connected to auxiliary database: BANK (not mounted)
+
+RMAN> duplicate target database for standby from active database;
+
+Starting Duplicate Db at 19-DEC-24
+using target database control file instead of recovery catalog
+allocated channel: ORA_AUX_DISK_1
+channel ORA_AUX_DISK_1: SID=237 device type=DISK
+allocated channel: ORA_AUX_DISK_2
+channel ORA_AUX_DISK_2: SID=18 device type=DISK
+
+contents of Memory Script:
+{
+   backup as copy reuse
+   passwordfile auxiliary format  '/u01/app/oracle/product/19.0.0.0/dbhome_1/dbs/orapwbankb'   ;
+}
+executing Memory Script
+
+Starting backup at 19-DEC-24
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=85 device type=DISK
+allocated channel: ORA_DISK_2
+channel ORA_DISK_2: SID=79 device type=DISK
+Finished backup at 19-DEC-24
+duplicating Online logs to Oracle Managed File (OMF) location
+duplicating Datafiles to Oracle Managed File (OMF) location
+
+contents of Memory Script:
+{
+   sql clone "alter system set  control_files = 
+  ''/u01/app/oracle/oradata/BANK/controlfile/o1_mf_mozmxw0m_.ctl'', ''/u01/app/oracle/fast_recovery_area/BANK/controlfile/o1_mf_mozmxw5n_.ctl'' comment=
+ ''Set by RMAN'' scope=spfile";
+   restore clone from service  'to_bank' standby controlfile;
+}
+executing Memory Script
+
+sql statement: alter system set  control_files =   ''/u01/app/oracle/oradata/BANK/controlfile/o1_mf_mozmxw0m_.ctl'', ''/u01/app/oracle/fast_recovery_area/BANK/controlfile/o1_mf_mozmxw5n_.ctl'' comment= ''Set by RMAN'' scope=spfile
+
+Starting restore at 19-DEC-24
+using channel ORA_AUX_DISK_1
+using channel ORA_AUX_DISK_2
+
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service to_bank
+channel ORA_AUX_DISK_1: restoring control file
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:03
+output file name=/u01/app/oracle/oradata/BANK/controlfile/o1_mf_mozmxw0m_.ctl
+output file name=/u01/app/oracle/fast_recovery_area/BANK/controlfile/o1_mf_mozmxw5n_.ctl
+Finished restore at 19-DEC-24
+
+contents of Memory Script:
+{
+   sql clone 'alter database mount standby database';
+}
+executing Memory Script
+
+sql statement: alter database mount standby database
+
+contents of Memory Script:
+{
+   set newname for clone tempfile  1 to new;
+   set newname for clone tempfile  2 to new;
+   set newname for clone tempfile  3 to new;
+   set newname for clone tempfile  4 to new;
+   set newname for clone tempfile  5 to new;
+   switch clone tempfile all;
+   set newname for clone datafile  1 to new;
+   set newname for clone datafile  3 to new;
+   set newname for clone datafile  4 to new;
+   set newname for clone datafile  5 to new;
+   set newname for clone datafile  6 to new;
+   set newname for clone datafile  7 to new;
+   set newname for clone datafile  8 to new;
+   set newname for clone datafile  9 to new;
+   set newname for clone datafile  10 to new;
+   set newname for clone datafile  11 to new;
+   set newname for clone datafile  12 to new;
+   set newname for clone datafile  13 to new;
+   set newname for clone datafile  14 to new;
+   set newname for clone datafile  15 to new;
+   set newname for clone datafile  16 to new;
+   set newname for clone datafile  17 to new;
+   set newname for clone datafile  18 to new;
+   restore
+   from  nonsparse   from service 
+ 'to_bank'   clone database
+   ;
+   sql 'alter system archive log current';
+}
+executing Memory Script
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+renamed tempfile 1 to /u01/app/oracle/oradata/BANKB/datafile/o1_mf_temp_%u_.tmp in control file
+renamed tempfile 2 to /u01/app/oracle/oradata/BANKB/295ECACE63E52507E06356965732E724/datafile/o1_mf_temp_%u_.tmp in control file
+renamed tempfile 3 to /u01/app/oracle/oradata/BANKB/295EF6183F352CA1E0635696573282F2/datafile/o1_mf_temp_%u_.tmp in control file
+renamed tempfile 4 to /u01/app/oracle/oradata/BANKB/2961EC88166159A1E063569657325107/datafile/o1_mf_temp_%u_.tmp in control file
+renamed tempfile 5 to /u01/app/oracle/oradata/BANKB/2961EC88166359A1E063569657325107/datafile/o1_mf_temp_%u_.tmp in control file
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+Starting restore at 19-DEC-24
+using channel ORA_AUX_DISK_1
+using channel ORA_AUX_DISK_2
+
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service to_bank
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00001 to /u01/app/oracle/oradata/BANKB/datafile/o1_mf_system_%u_.dbf
+channel ORA_AUX_DISK_2: starting datafile backup set restore
+channel ORA_AUX_DISK_2: using network backup set from service to_bank
+channel ORA_AUX_DISK_2: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_2: restoring datafile 00003 to /u01/app/oracle/oradata/BANKB/datafile/o1_mf_sysaux_%u_.dbf
+channel ORA_AUX_DISK_2: restore complete, elapsed time: 00:02:20
+channel ORA_AUX_DISK_2: starting datafile backup set restore
+channel ORA_AUX_DISK_2: using network backup set from service to_bank
+channel ORA_AUX_DISK_2: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_2: restoring datafile 00004 to /u01/app/oracle/oradata/BANKB/datafile/o1_mf_undotbs1_%u_.dbf
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:02:50
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service to_bank
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00005 to /u01/app/oracle/oradata/BANKB/295ECACE63E52507E06356965732E724/datafile/o1_mf_system_%u_.dbf
+channel ORA_AUX_DISK_2: restore complete, elapsed time: 00:00:30
+channel ORA_AUX_DISK_2: starting datafile backup set restore
+channel ORA_AUX_DISK_2: using network backup set from service to_bank
+channel ORA_AUX_DISK_2: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_2: restoring datafile 00006 to /u01/app/oracle/oradata/BANKB/295ECACE63E52507E06356965732E724/datafile/o1_mf_sysaux_%u_.dbf
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:01:35
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service to_bank
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00007 to /u01/app/oracle/oradata/BANKB/datafile/o1_mf_users_%u_.dbf
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:36
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service to_bank
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00008 to /u01/app/oracle/oradata/BANKB/295ECACE63E52507E06356965732E724/datafile/o1_mf_undotbs1_%u_.dbf
+channel ORA_AUX_DISK_2: restore complete, elapsed time: 00:02:03
+channel ORA_AUX_DISK_2: starting datafile backup set restore
+channel ORA_AUX_DISK_2: using network backup set from service to_bank
+channel ORA_AUX_DISK_2: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_2: restoring datafile 00009 to /u01/app/oracle/oradata/BANKB/295EF6183F352CA1E0635696573282F2/datafile/o1_mf_system_%u_.dbf
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:16
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service to_bank
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00010 to /u01/app/oracle/oradata/BANKB/295EF6183F352CA1E0635696573282F2/datafile/o1_mf_sysaux_%u_.dbf
+channel ORA_AUX_DISK_2: restore complete, elapsed time: 00:00:26
+channel ORA_AUX_DISK_2: starting datafile backup set restore
+channel ORA_AUX_DISK_2: using network backup set from service to_bank
+channel ORA_AUX_DISK_2: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_2: restoring datafile 00011 to /u01/app/oracle/oradata/BANKB/295EF6183F352CA1E0635696573282F2/datafile/o1_mf_undotbs1_%u_.dbf
+channel ORA_AUX_DISK_2: restore complete, elapsed time: 00:00:28
+channel ORA_AUX_DISK_2: starting datafile backup set restore
+channel ORA_AUX_DISK_2: using network backup set from service to_bank
+channel ORA_AUX_DISK_2: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_2: restoring datafile 00012 to /u01/app/oracle/oradata/BANKB/295EF6183F352CA1E0635696573282F2/datafile/o1_mf_users_%u_.dbf
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:01:00
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service to_bank
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00013 to /u01/app/oracle/oradata/BANKB/2961EC88166159A1E063569657325107/datafile/o1_mf_system_%u_.dbf
+channel ORA_AUX_DISK_2: restore complete, elapsed time: 00:00:22
+channel ORA_AUX_DISK_2: starting datafile backup set restore
+channel ORA_AUX_DISK_2: using network backup set from service to_bank
+channel ORA_AUX_DISK_2: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_2: restoring datafile 00014 to /u01/app/oracle/oradata/BANKB/2961EC88166159A1E063569657325107/datafile/o1_mf_sysaux_%u_.dbf
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:02:05
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service to_bank
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00015 to /u01/app/oracle/oradata/BANKB/2961EC88166159A1E063569657325107/datafile/o1_mf_undotbs1_%u_.dbf
+channel ORA_AUX_DISK_2: restore complete, elapsed time: 00:02:21
+channel ORA_AUX_DISK_2: starting datafile backup set restore
+channel ORA_AUX_DISK_2: using network backup set from service to_bank
+channel ORA_AUX_DISK_2: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_2: restoring datafile 00016 to /u01/app/oracle/oradata/BANKB/2961EC88166359A1E063569657325107/datafile/o1_mf_system_%u_.dbf
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:15
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service to_bank
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00017 to /u01/app/oracle/oradata/BANKB/2961EC88166359A1E063569657325107/datafile/o1_mf_sysaux_%u_.dbf
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:01:15
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service to_bank
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00018 to /u01/app/oracle/oradata/BANKB/2961EC88166359A1E063569657325107/datafile/o1_mf_undotbs1_%u_.dbf
+channel ORA_AUX_DISK_2: restore complete, elapsed time: 00:01:16
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:04
+Finished restore at 19-DEC-24
+
+sql statement: alter system archive log current
+
+contents of Memory Script:
+{
+   switch clone datafile all;
+}
+executing Memory Script
+
+datafile 1 switched to datafile copy
+input datafile copy RECID=21 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/datafile/o1_mf_system_mp7zlt9y_.dbf
+datafile 3 switched to datafile copy
+input datafile copy RECID=22 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/datafile/o1_mf_sysaux_mp7zlww0_.dbf
+datafile 4 switched to datafile copy
+input datafile copy RECID=23 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/datafile/o1_mf_undotbs1_mp7zr355_.dbf
+datafile 5 switched to datafile copy
+input datafile copy RECID=24 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/295ECACE63E52507E06356965732E724/datafile/o1_mf_system_mp7zr4wz_.dbf
+datafile 6 switched to datafile copy
+input datafile copy RECID=25 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/295ECACE63E52507E06356965732E724/datafile/o1_mf_sysaux_mp7zrj3y_.dbf
+datafile 7 switched to datafile copy
+input datafile copy RECID=26 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/datafile/o1_mf_users_mp7zv4c5_.dbf
+datafile 8 switched to datafile copy
+input datafile copy RECID=27 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/295ECACE63E52507E06356965732E724/datafile/o1_mf_undotbs1_mp7zw7nh_.dbf
+datafile 9 switched to datafile copy
+input datafile copy RECID=28 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/295EF6183F352CA1E0635696573282F2/datafile/o1_mf_system_mp7zw8yt_.dbf
+datafile 10 switched to datafile copy
+input datafile copy RECID=29 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/295EF6183F352CA1E0635696573282F2/datafile/o1_mf_sysaux_mp7zwwrb_.dbf
+datafile 11 switched to datafile copy
+input datafile copy RECID=30 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/295EF6183F352CA1E0635696573282F2/datafile/o1_mf_undotbs1_mp7zx6n0_.dbf
+datafile 12 switched to datafile copy
+input datafile copy RECID=31 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/295EF6183F352CA1E0635696573282F2/datafile/o1_mf_users_mp7zyd9s_.dbf
+datafile 13 switched to datafile copy
+input datafile copy RECID=32 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/2961EC88166159A1E063569657325107/datafile/o1_mf_system_mp7zymor_.dbf
+datafile 14 switched to datafile copy
+input datafile copy RECID=33 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/2961EC88166159A1E063569657325107/datafile/o1_mf_sysaux_mp7zyndy_.dbf
+datafile 15 switched to datafile copy
+input datafile copy RECID=34 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/2961EC88166159A1E063569657325107/datafile/o1_mf_undotbs1_mp802klg_.dbf
+datafile 16 switched to datafile copy
+input datafile copy RECID=35 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/2961EC88166359A1E063569657325107/datafile/o1_mf_system_mp8030tm_.dbf
+datafile 17 switched to datafile copy
+input datafile copy RECID=36 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/2961EC88166359A1E063569657325107/datafile/o1_mf_sysaux_mp803149_.dbf
+datafile 18 switched to datafile copy
+input datafile copy RECID=37 STAMP=1188146824 file name=/u01/app/oracle/oradata/BANKB/2961EC88166359A1E063569657325107/datafile/o1_mf_undotbs1_mp805ddd_.dbf
+Finished Duplicate Db at 19-DEC-24
+
+RMAN> exit
+
+
+Recovery Manager complete.
+[oracle@siva admin]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Dec 19 16:52:06 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> show pdbs
+
+    CON_ID CON_NAME			  OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+	 2 PDB$SEED			  MOUNTED
+	 3 SBI				  MOUNTED
+	 4 HDFC 			  MOUNTED
+	 5 ICICI			  MOUNTED
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@siva admin]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Dec 19 16:53:49 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> alter database recover managed standby database disconnect from session;
+
+Database altered.
+
+SQL> alter system set log_archive_dest_state_2=DEFER scope=both sid='*';
+
+System altered.
+
+SQL> set lines 300 pages 300;
+SELECT sequence#, first_time, next_time, applied FROM v$archived_log ORDER BY sequence#;
+SQL> 
+no rows selected
+
+SQL> select open_mode,database_role from v$database;
+
+OPEN_MODE	     DATABASE_ROLE
+-------------------- ----------------
+MOUNTED 	     PHYSICAL STANDBY
+
+SQL> set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;
+SQL> SQL> 
+NAME	  DB_UNIQUE_ OPEN_MODE		  DATABASE_ROLE    PROTECTION_MODE	SWITCHOVER# SWITCHOVER_STATUS	 CURRENT_SCN
+--------- ---------- -------------------- ---------------- -------------------- ----------- -------------------- -----------
+BANK	  bankb      MOUNTED		  PHYSICAL STANDBY MAXIMUM PERFORMANCE		  0 RECOVERY NEEDED	     2762780
+
+SQL> alter database recover managed standby database cancel;
+
+Database altered.
+
+SQL> set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;
+SQL> SQL> 
+NAME	  DB_UNIQUE_ OPEN_MODE		  DATABASE_ROLE    PROTECTION_MODE	SWITCHOVER# SWITCHOVER_STATUS	 CURRENT_SCN
+--------- ---------- -------------------- ---------------- -------------------- ----------- -------------------- -----------
+BANK	  bankb      MOUNTED		  PHYSICAL STANDBY MAXIMUM PERFORMANCE		  0 RECOVERY NEEDED	     2762780
+
+SQL> shut immediate
+ORA-01109: database not open
+
+
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup mount;
+ORACLE instance started.
+
+Total System Global Area 1543500832 bytes
+Fixed Size		    9135136 bytes
+Variable Size		  939524096 bytes
+Database Buffers	  587202560 bytes
+Redo Buffers		    7639040 bytes
+Database mounted.
+SQL> select flashback_on from v$database;
+
+FLASHBACK_ON
+------------------
+NO
+
+SQL> alter database flashback on;
+alter database flashback on
+*
+ERROR at line 1:
+ORA-38706: Cannot turn on FLASHBACK DATABASE logging.
+ORA-38788: More standby database recovery is needed
+
+
+SQL> alter database recover managed standby database cancel;
+alter database recover managed standby database cancel
+*
+ERROR at line 1:
+ORA-16136: Managed Standby Recovery not active
+
+
+SQL> alter database recover managed standby database disconnect from session;
+
+Database altered.
+
+SQL> alter database flashback on;
+alter database flashback on
+*
+ERROR at line 1:
+ORA-01153: an incompatible media recovery is active
+
+
+SQL> alter database recover managed standby database cancel;
+^Calter database recover managed standby database cancel
+*
+ERROR at line 1:
+ORA-01013: user requested cancel of current operation
+
+
+
+SQL> shut immediate;
+ORA-01109: database not open
+
+
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup nomount;
+ORACLE instance started.
+
+Total System Global Area 1543500832 bytes
+Fixed Size		    9135136 bytes
+Variable Size		  939524096 bytes
+Database Buffers	  587202560 bytes
+Redo Buffers		    7639040 bytes
+SQL> set lines 300 pages 300;
+SELECT sequence#, first_time, next_time, applied FROM v$archived_log ORDER BY sequence#;
+SQL> SELECT sequence#, first_time, next_time, applied FROM v$archived_log ORDER BY sequence#
+                                                      *
+ERROR at line 1:
+ORA-01507: database not mounted
+
+
+SQL> shut immediate;
+ORA-01507: database not mounted
+
+
+ORACLE instance shut down.
+SQL> startup mount;
+ORACLE instance started.
+
+Total System Global Area 1543500832 bytes
+Fixed Size		    9135136 bytes
+Variable Size		  939524096 bytes
+Database Buffers	  587202560 bytes
+Redo Buffers		    7639040 bytes
+Database mounted.
+SQL> set lines 300 pages 300;
+SELECT sequence#, first_time, next_time, applied FROM v$archived_log ORDER BY sequence#;
+SQL> 
+no rows selected
+
+SQL> set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;
+SQL> SQL> 
+NAME	  DB_UNIQUE_ OPEN_MODE		  DATABASE_ROLE    PROTECTION_MODE	SWITCHOVER# SWITCHOVER_STATUS	 CURRENT_SCN
+--------- ---------- -------------------- ---------------- -------------------- ----------- -------------------- -----------
+BANK	  bankb      MOUNTED		  PHYSICAL STANDBY MAXIMUM PERFORMANCE		  0 RECOVERY NEEDED	     2762780
+
+SQL> set lines 300 pages 300;
+SELECT sequence#, FIRST_CHANGE#,NEXT_CHANGE# FROM v$archived_log ORDER BY sequence#;SQL> 
+
+no rows selected
+
+SQL> set lines 300 pages 300;
+SELECT sequence#, first_time, next_time, applied FROM v$archived_log ORDER BY sequence#;
+SQL> 
+no rows selected
+
+SQL> alter database recover managed standby database disconnect from session;
+
+Database altered.
+
+SQL> set lines 300 pages 300;
+SELECT sequence#, first_time, next_time, applied FROM v$archived_log ORDER BY sequence#;
+SQL> 
+no rows selected
+
+SQL> select process,status from v$managed_standby;
+
+PROCESS   STATUS
+--------- ------------
+ARCH	  CONNECTED
+DGRD	  ALLOCATED
+DGRD	  ALLOCATED
+ARCH	  CONNECTED
+ARCH	  CONNECTED
+ARCH	  CONNECTED
+MRP0	  WAIT_FOR_LOG
+RFS	  IDLE
+RFS	  IDLE
+RFS	  IDLE
+RFS	  IDLE
+RFS	  IDLE
+
+12 rows selected.
+
+SQL> set lines 300 pages 300;
+SELECT sequence#, first_time, next_time, applied FROM v$archived_log ORDER BY sequence#;
+SQL> 
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> /
+
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 NO
+	34 19-DEC-24 19-DEC-24 NO
+	35 19-DEC-24 19-DEC-24 NO
+	36 19-DEC-24 19-DEC-24 NO
+	37 19-DEC-24 19-DEC-24 NO
+	38 19-DEC-24 19-DEC-24 NO
+	39 19-DEC-24 19-DEC-24 NO
+	40 19-DEC-24 19-DEC-24 NO
+	41 19-DEC-24 19-DEC-24 NO
+
+16 rows selected.
+
+SQL> set lines 300 pages 300;
+SELECT sequence#, FIRST_CHANGE#,NEXT_CHANGE# FROM v$archived_log ORDER BY sequence#;SQL> 
+
+ SEQUENCE# FIRST_CHANGE# NEXT_CHANGE#
+---------- ------------- ------------
+	26	 2752727      2766214
+	27	 2766214      2774261
+	28	 2774261      2774268
+	29	 2774268      2774275
+	30	 2774275      2774278
+	31	 2774278      2774291
+	32	 2774291      2774294
+	33	 2774294      2774303
+	34	 2774303      2774308
+	35	 2774308      2774315
+	36	 2774315      2774320
+	37	 2774320      2774329
+	38	 2774329      2774332
+	39	 2774332      2774341
+	40	 2774341      2774344
+	41	 2774344      2774353
+
+16 rows selected.
+
+SQL> set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;
+SQL> SQL> 
+NAME	  DB_UNIQUE_ OPEN_MODE		  DATABASE_ROLE    PROTECTION_MODE	SWITCHOVER# SWITCHOVER_STATUS	 CURRENT_SCN
+--------- ---------- -------------------- ---------------- -------------------- ----------- -------------------- -----------
+BANK	  bankb      MOUNTED		  PHYSICAL STANDBY MAXIMUM PERFORMANCE	 2769418964 NOT ALLOWED 	     2776432
+
+SQL> set lines 300 pages 300;
+SELECT sequence#, first_time, next_time, applied FROM v$archived_log ORDER BY sequence#;
+SQL> 
+ SEQUENCE# FIRST_TIM NEXT_TIME APPLIED
+---------- --------- --------- ---------
+	26 19-DEC-24 19-DEC-24 NO
+	27 19-DEC-24 19-DEC-24 IN-MEMORY
+	28 19-DEC-24 19-DEC-24 NO
+	29 19-DEC-24 19-DEC-24 NO
+	30 19-DEC-24 19-DEC-24 NO
+	31 19-DEC-24 19-DEC-24 NO
+	32 19-DEC-24 19-DEC-24 NO
+	33 19-DEC-24 19-DEC-24 YES
+	34 19-DEC-24 19-DEC-24 YES
+	35 19-DEC-24 19-DEC-24 YES
+	36 19-DEC-24 19-DEC-24 YES
+	37 19-DEC-24 19-DEC-24 YES
+	38 19-DEC-24 19-DEC-24 YES
+	39 19-DEC-24 19-DEC-24 YES
+	40 19-DEC-24 19-DEC-24 YES
+	41 19-DEC-24 19-DEC-24 YES
+
+16 rows selected.
+
+SQL> alter database flashback on;
+alter database flashback on
+*
+ERROR at line 1:
+ORA-01153: an incompatible media recovery is active
+
+
+SQL> alter database recover managed standby database cancel;
+
+Database altered.
+
+SQL> alter database flashback on;
+
+Database altered.
+
+SQL> select GUARANTEE_FLASHBACK_DATABASE,RESTORE_POINT_TIME,name from v$restore_point;
+
+no rows selected
+
+SQL> set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;
+SQL> SQL> 
+NAME	  DB_UNIQUE_ OPEN_MODE		  DATABASE_ROLE    PROTECTION_MODE	SWITCHOVER# SWITCHOVER_STATUS	 CURRENT_SCN
+--------- ---------- -------------------- ---------------- -------------------- ----------- -------------------- -----------
+BANK	  bankb      MOUNTED		  PHYSICAL STANDBY MAXIMUM PERFORMANCE	 2769418964 NOT ALLOWED 	     2781544
+
+SQL> select status from v$instance;
+
+STATUS
+------------
+MOUNTED
+
+SQL> alter database convert to snapshot standby;
+
+Database altered.
+
+SQL> set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;
+SQL> SQL> 
+NAME	  DB_UNIQUE_ OPEN_MODE		  DATABASE_ROLE    PROTECTION_MODE	SWITCHOVER# SWITCHOVER_STATUS	 CURRENT_SCN
+--------- ---------- -------------------- ---------------- -------------------- ----------- -------------------- -----------
+BANK	  bankb      MOUNTED		  SNAPSHOT STANDBY MAXIMUM PERFORMANCE		  0 NOT ALLOWED 		   0
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;
+SQL> SQL> 
+NAME	  DB_UNIQUE_ OPEN_MODE		  DATABASE_ROLE    PROTECTION_MODE	SWITCHOVER# SWITCHOVER_STATUS	 CURRENT_SCN
+--------- ---------- -------------------- ---------------- -------------------- ----------- -------------------- -----------
+BANK	  bankb      READ WRITE 	  SNAPSHOT STANDBY MAXIMUM PERFORMANCE	 2769681944 NOT ALLOWED 	     2781797
+
+SQL> select open_mode,database_role from v$database;
+
+OPEN_MODE	     DATABASE_ROLE
+-------------------- ----------------
+READ WRITE	     SNAPSHOT STANDBY
+
+SQL> select NAME,GUARANTEE_FLASHBACK_DATABASE from v$restore_point;
+
+NAME																 GUA
+-------------------------------------------------------------------------------------------------------------------------------- ---
+SNAPSHOT_STANDBY_REQUIRED_12/19/2024 17:55:40											 YES
+
+SQL> shut immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup mount;
+ORACLE instance started.
+
+Total System Global Area 1543500832 bytes
+Fixed Size		    9135136 bytes
+Variable Size		  939524096 bytes
+Database Buffers	  587202560 bytes
+Redo Buffers		    7639040 bytes
+Database mounted.
+SQL> alter database convert to physical standby;
+
+Database altered.
+
+SQL> select status from v$instance;
+
+STATUS
+------------
+MOUNTED
+
+SQL> alter database recover managed standby database disconnect from session;
+
+Database altered.
+
+SQL> set lines 300 pages 300;
+col DB_UNIQUE_NAME for a10;
+select name,db_unique_name,open_mode,DATABASE_ROLE,PROTECTION_MODE,SWITCHOVER#,SWITCHOVER_status,current_scn from v$database;SQL> SQL> 
+
+NAME	  DB_UNIQUE_ OPEN_MODE		  DATABASE_ROLE    PROTECTION_MODE	SWITCHOVER# SWITCHOVER_STATUS	 CURRENT_SCN
+--------- ---------- -------------------- ---------------- -------------------- ----------- -------------------- -----------
+BANK	  bankb      MOUNTED		  PHYSICAL STANDBY MAXIMUM PERFORMANCE	 2769418964 NOT ALLOWED 	     2781544
+
+SQL> 
